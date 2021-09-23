@@ -6,8 +6,12 @@ import androidx.room.PrimaryKey
 import ru.gaket.themoviedb.domain.movies.models.MovieId
 
 /**
+ * todo: handle column names as in [ru.gaket.themoviedb.data.review.local.MyReviewEntity]
+ */
+/**
  * DB class of detailed Movie stored in room
  */
+//todo: remove default values
 @Entity(tableName = "movies")
 data class MovieEntity(
 

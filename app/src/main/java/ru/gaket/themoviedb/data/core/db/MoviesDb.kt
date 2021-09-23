@@ -1,8 +1,11 @@
 package ru.gaket.themoviedb.data.core.db
 
+import android.content.Context
 import androidx.room.Database
+import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import dagger.hilt.android.qualifiers.ApplicationContext
 import ru.gaket.themoviedb.data.genres.local.GenreEntity
 import ru.gaket.themoviedb.data.genres.local.GenresDao
 import ru.gaket.themoviedb.data.movies.local.MovieEntity
@@ -28,4 +31,16 @@ abstract class MoviesDb : RoomDatabase() {
     abstract fun genresDao(): GenresDao
     abstract fun moviesDao(): MoviesDao
     abstract fun myReviewsDao(): MyReviewsDao
+
+    companion object {
+
+        fun create(@ApplicationContext appContext: Context): MoviesDb =
+            Room.databaseBuilder(
+                appContext,
+                MoviesDb::class.java,
+                "movies_database"
+            )
+                .fallbackToDestructiveMigration()
+                .build()
+    }
 }

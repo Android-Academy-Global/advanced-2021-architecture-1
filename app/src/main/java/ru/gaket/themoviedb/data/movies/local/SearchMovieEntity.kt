@@ -4,8 +4,13 @@ import androidx.room.ColumnInfo
 import androidx.room.PrimaryKey
 
 /**
+ * todo: handle column names as in [ru.gaket.themoviedb.data.review.local.MyReviewEntity]
+ */
+/**
  * DB class of Movie stored in room
  */
+//todo: remove default values
+//todo: use MovieId for id
 data class SearchMovieEntity(
 
     @PrimaryKey

@@ -6,6 +6,7 @@ import ru.gaket.themoviedb.data.genres.remote.GenreDto
 /**
  * Class of detailed Movie coming from the api
  */
+//todo: use MovieId for id
 data class DetailsMovieDto(
     @SerializedName("id")
     val id: Long = 0,

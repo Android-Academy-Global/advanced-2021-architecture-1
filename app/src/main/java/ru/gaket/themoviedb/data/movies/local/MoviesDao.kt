@@ -7,6 +7,9 @@ import androidx.room.Query
 import androidx.room.Transaction
 import ru.gaket.themoviedb.domain.movies.models.MovieId
 
+/**
+ * todo: handle column names as in [ru.gaket.themoviedb.data.review.local.MyReviewsDao]
+ */
 @Dao
 interface MoviesDao {
 
@@ -23,7 +26,4 @@ interface MoviesDao {
     @Transaction
     @Query("DELETE FROM movies")
     suspend fun deleteAll()
-
-    @Query("DELETE FROM movies WHERE id=:id")
-    suspend fun deleteById(id: Int)
 }

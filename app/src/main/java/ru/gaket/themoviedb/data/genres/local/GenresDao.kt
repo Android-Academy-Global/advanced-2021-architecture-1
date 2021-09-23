@@ -5,6 +5,9 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
+/**
+ * todo: handle column names as in [ru.gaket.themoviedb.data.review.local.MyReviewsDao]
+ */
 @Dao
 interface GenresDao {
 
@@ -17,15 +20,6 @@ interface GenresDao {
     @Query("SELECT * FROM genres WHERE id IN (:ids)")
     suspend fun getAllByIds(ids: List<Int>): List<GenreEntity>
 
-    @Query("SELECT * FROM genres WHERE id=:id LIMIT 1")
-    suspend fun getById(id: Int): GenreEntity?
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun replaceAll(genres: List<GenreEntity>)
-
-    @Query("DELETE FROM genres")
-    suspend fun deleteAll()
-
-    @Query("DELETE FROM genres WHERE id=:id")
-    suspend fun deleteById(id: Int)
+    suspend fun insertAll(genres: List<GenreEntity>)
 }

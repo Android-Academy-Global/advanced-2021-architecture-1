@@ -7,6 +7,7 @@ import ru.gaket.themoviedb.util.runOperationCatching
 import timber.log.Timber
 import javax.inject.Inject
 
+//todo: revisit this class and if useless remove
 interface MoviesRemoteDataSource {
 
     suspend fun searchMovies(query: String, page: Int): OperationResult<List<SearchMovieDto>, Throwable>
@@ -14,6 +15,7 @@ interface MoviesRemoteDataSource {
     suspend fun getMovieDetails(id: MovieId): OperationResult<DetailsMovieDto, Throwable>
 }
 
+//todo: revisit this class and if useless remove
 class MoviesRemoteDataSourceImpl @Inject constructor(
     private val moviesApi: MoviesApi,
 ) : MoviesRemoteDataSource {

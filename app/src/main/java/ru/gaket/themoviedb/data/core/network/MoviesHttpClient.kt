@@ -10,6 +10,7 @@ import ru.gaket.themoviedb.di.BaseUrlQualifier
 import ru.gaket.themoviedb.di.TheMovieDbApiKey
 import javax.inject.Inject
 
+//todo: maybe this class useless
 interface MoviesHttpClient {
 
     // todo: [Sergey] migrate to property

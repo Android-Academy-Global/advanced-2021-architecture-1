@@ -1,12 +1,12 @@
 package ru.gaket.themoviedb.di
 
-import dagger.Binds
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import ru.gaket.themoviedb.data.core.db.MoviesDbClient
-import ru.gaket.themoviedb.data.core.db.MoviesDbClientImpl
+import ru.gaket.themoviedb.data.core.db.MoviesDb
 import ru.gaket.themoviedb.data.genres.local.GenresDao
 import ru.gaket.themoviedb.data.movies.local.MoviesDao
 import ru.gaket.themoviedb.data.review.local.MyReviewsDao
@@ -14,25 +14,22 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface DatabaseModule {
+object DatabaseModule {
 
-    @Binds
+    @Provides
     @Singleton
-    fun bindMoviesDbClient(
-        impl: MoviesDbClientImpl,
-    ): MoviesDbClient
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-object DaoWrapperModule {
+    fun provideDatabase(@ApplicationContext appContext: Context): MoviesDb =
+        MoviesDb.create(appContext)
 
     @Provides
-    fun provideGenresDao(client: MoviesDbClient): GenresDao = client.genresDao()
+    fun provideGenresDao(moviesDb: MoviesDb): GenresDao =
+        moviesDb.genresDao()
 
     @Provides
-    fun provideMoviesDao(client: MoviesDbClient): MoviesDao = client.moviesDao()
+    fun provideMoviesDao(moviesDb: MoviesDb): MoviesDao =
+        moviesDb.moviesDao()
 
     @Provides
-    fun provideMyReviewsDao(client: MoviesDbClient): MyReviewsDao = client.myReviewsDao()
+    fun provideMyReviewsDao(moviesDb: MoviesDb): MyReviewsDao =
+        moviesDb.myReviewsDao()
 }
