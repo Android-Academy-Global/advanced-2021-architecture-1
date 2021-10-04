@@ -5,5 +5,4 @@ import ru.gaket.themoviedb.domain.movies.models.MovieId
 
 sealed class MovieDetailsEvent {
     data class ShowErrorEvent(@StringRes val errorMessageResId: Int) : MovieDetailsEvent()
-    data class OpenAddReviewScreenEvent(val movieId: MovieId) : MovieDetailsEvent()
 }

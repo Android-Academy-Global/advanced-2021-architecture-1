@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -24,7 +25,6 @@ import ru.gaket.themoviedb.domain.review.models.MyReview
 import ru.gaket.themoviedb.domain.review.models.SomeoneReview
 import ru.gaket.themoviedb.domain.review.repository.ReviewRepository
 import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsEvent
-import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsEvent.OpenAddReviewScreenEvent
 import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsEvent.ShowErrorEvent
 import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsReview
 import ru.gaket.themoviedb.presentation.moviedetails.model.toMovieDetailsReview
@@ -47,7 +47,7 @@ class MovieDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val movieId = savedStateHandle.get<Long>(ARG_MOVIE_ID) ?: -1
+    private val movieId = savedStateHandle.get<Long>(ARG_MOVIE_ID) ?: error("No movie id was passed!")
     private val title = savedStateHandle.get<String>(ARG_MOVIE_TITLE).orEmpty()
 
     private var _state = MutableLiveData(MovieDetailsState(title = title))
@@ -69,9 +69,9 @@ class MovieDetailsViewModel @Inject constructor(
 
         viewModelScope.launch {
             reviewRepository.getSomeoneReviews(movieId)
-                .mapSuccess { someoneReviews -> authInteractor.getCurrentUser() to someoneReviews }
+                .mapSuccess(::mapOnlySomeoneReviews)
                 .get(
-                    onSuccess = { (user, someoneReviews) -> handleSomeoneReviews(user, someoneReviews) },
+                    onSuccess = ::handleSomeoneReviews,
                     onError = {
                         ShowErrorEvent(R.string.error_getting_movie_info).publish()
                         reduceState { copy(isLoadingReviews = false) }
@@ -81,8 +81,8 @@ class MovieDetailsViewModel @Inject constructor(
 
         viewModelScope.launch {
             authInteractor.observeCurrentUser()
-                .filter { user -> user != null }
-                .flatMapLatest { user -> reviewRepository.getMyReviews(movieId).map { user!! to it } }
+                .filterNotNull()
+                .flatMapLatest { user -> reviewRepository.getMyReviews(movieId).map { review -> user to review } }
                 .collect { (user, myReview) -> handleMyReview(user, myReview) }
         }
 
@@ -93,11 +93,17 @@ class MovieDetailsViewModel @Inject constructor(
         }
     }
 
+    private fun mapOnlySomeoneReviews(reviews: List<SomeoneReview>): List<MovieDetailsReview.SomeoneReview> {
+        val user = authInteractor.getCurrentUser()
+
+        return reviews
+            .filter { review -> review.author != user?.email }
+            .map { review -> review.toMovieDetailsReview() }
+    }
+
     fun onBrowseMovieClick() = webNavigator.navigateTo(movieId)
 
     fun onReviewClick() = Unit
-
-    fun onAddReviewClick() = OpenAddReviewScreenEvent(movieId).publish()
 
     @Synchronized
     private fun reduceState(reducer: MovieDetailsState.() -> MovieDetailsState) {
@@ -125,12 +131,10 @@ class MovieDetailsViewModel @Inject constructor(
         get(Calendar.YEAR)
     }
 
-    private fun handleSomeoneReviews(user: User?, reviews: List<SomeoneReview>) = reduceState {
+    private fun handleSomeoneReviews(reviews: List<MovieDetailsReview.SomeoneReview>) = reduceState {
         copy(
             isLoadingReviews = false,
-            someoneReviews = reviews
-                .filter { review -> review.author != user?.email }
-                .map { review -> review.toMovieDetailsReview() },
+            someoneReviews = reviews,
         )
     }
 
@@ -153,7 +157,5 @@ class MovieDetailsViewModel @Inject constructor(
         copy(myReview = MovieDetailsReview.MyReview(isAuthorized = false))
     }
 
-    private fun MovieDetailsEvent.publish() = viewModelScope.launch {
-        _events.emit(this@publish)
-    }
+    private suspend fun MovieDetailsEvent.publish() = _events.emit(this@publish)
 }

@@ -14,7 +14,7 @@ class ReviewViewHolder(
     private val binding: ItemReviewBinding,
     private val onReviewClick: () -> Unit,
     private val onAddReviewClick: () -> Unit,
-    private val authorizeClick: () -> Unit,
+    private val onAuthorizeClick: () -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(review: MovieDetailsReview) = with(binding) {
@@ -47,7 +47,7 @@ class ReviewViewHolder(
     private fun getAddReviewClickListener(isAuthorized: Boolean) = if (isAuthorized) {
         onAddReviewClick
     } else {
-        authorizeClick
+        onAuthorizeClick
     }
 
     private fun setupReviewView(context: Context, review: MovieDetailsReview) = with(binding) {

@@ -10,14 +10,14 @@ import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsReview
 class ReviewsAdapter(
     private val onReviewClick: () -> Unit,
     private val onAddReviewClick: () -> Unit,
-    private val authorizeClick: () -> Unit,
+    private val onAuthorizeClick: () -> Unit,
 ) : ListAdapter<MovieDetailsReview, ReviewViewHolder>(ReviewsDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReviewViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = ItemReviewBinding.inflate(layoutInflater, parent, false)
 
-        return ReviewViewHolder(binding, onReviewClick, onAddReviewClick, authorizeClick)
+        return ReviewViewHolder(binding, onReviewClick, onAddReviewClick, onAuthorizeClick)
     }
 
     override fun onBindViewHolder(holder: ReviewViewHolder, position: Int) {

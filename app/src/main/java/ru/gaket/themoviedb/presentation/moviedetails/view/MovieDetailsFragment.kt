@@ -21,7 +21,6 @@ import ru.gaket.themoviedb.core.navigation.ReviewScreen
 import ru.gaket.themoviedb.core.navigation.Screen
 import ru.gaket.themoviedb.databinding.FragmentMovieDetailsBinding
 import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsEvent
-import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsEvent.OpenAddReviewScreenEvent
 import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsEvent.ShowErrorEvent
 import ru.gaket.themoviedb.presentation.moviedetails.viewmodel.MovieDetailsState
 import ru.gaket.themoviedb.presentation.moviedetails.viewmodel.MovieDetailsViewModel
@@ -39,7 +38,11 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
     lateinit var navigator: Navigator
 
     private val reviewsAdapter by lazy {
-        ReviewsAdapter(viewModel::onReviewClick, viewModel::onAddReviewClick) { navigator.navigateTo(AuthScreen()) }
+        ReviewsAdapter(
+            onReviewClick = viewModel::onReviewClick,
+            onAddReviewClick = { ReviewScreen(requireArguments().getLong(ARG_MOVIE_ID)).navigate() },
+            onAuthorizeClick = { navigator.navigateTo(AuthScreen()) }
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -57,7 +60,6 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
     }
 
     private fun handleEvent(event: MovieDetailsEvent) = when (event) {
-        is OpenAddReviewScreenEvent -> ReviewScreen(event.movieId).navigate()
         is ShowErrorEvent -> showSnackError(event.errorMessageResId)
     }
 
