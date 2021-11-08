@@ -45,6 +45,7 @@ class SampleTest : TestCase() {
                             isVisible()
                             click()
                         }
+                        pressBack()
                     }
                 }
                 step("Open Duna film details") {
