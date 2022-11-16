@@ -32,7 +32,8 @@ inline fun <reified VM : ViewModel> createAbstractViewModelFactory(
     crossinline creator: () -> VM,
 ): ViewModelProvider.Factory =
     object : ViewModelProvider.Factory {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             require(modelClass == VM::class.java)
             @Suppress("UNCHECKED_CAST")
             return (creator() as T)
