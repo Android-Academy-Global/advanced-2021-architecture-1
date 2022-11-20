@@ -14,6 +14,8 @@
     <string name="email">E-mail</string>
     <string name="auth">Auth</string>
     <string name="password">Password</string>
+    <string name="hide_password">Hide password</string>
+    <string name="show_password">Show password</string>
     <string name="email_input_error">Invalid email</string>
     <string name="password_input_error">Invalid password</string>
     <string name="invalid_user_credentials">Invalid user credentials</string>
