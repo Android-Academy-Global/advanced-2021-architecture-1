@@ -1,41 +1,33 @@
 {
   "project_info": {
-    "project_number": "843433285622",
-    "project_id": "androidacademyarch",
-    "storage_bucket": "androidacademyarch.appspot.com"
+    "project_number": "678083424804",
+    "project_id": "android-academy-movies-search",
+    "storage_bucket": "android-academy-movies-search.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:843433285622:android:a4dce4a918b5e4544ad9d7",
+        "mobilesdk_app_id": "1:678083424804:android:87cfbe5178f7f7eceb5eb1",
         "android_client_info": {
           "package_name": "ru.gaket.themoviedb"
         }
       },
       "oauth_client": [
         {
-          "client_id": "843433285622-m66h8j54hcijib3spidv8o45bacjsumu.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "ru.gaket.themoviedb",
-            "certificate_hash": "f9ef818657cd887f4f4e100a226bcddc2e4a08e9"
-          }
-        },
-        {
-          "client_id": "843433285622-8h5r2n6c2jqbfn96ok7oqtcal3pg57u3.apps.googleusercontent.com",
+          "client_id": "678083424804-b5uitqg7vhh65eh5o700blcbkugr8qps.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBbHvNLztowvn3meE65RCZd4eCR7pRX_sQ"
+          "current_key": "AIzaSyDWqQKNruIrUAV3dHE8JceWUjy6fLAocKc"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "843433285622-8h5r2n6c2jqbfn96ok7oqtcal3pg57u3.apps.googleusercontent.com",
+              "client_id": "678083424804-b5uitqg7vhh65eh5o700blcbkugr8qps.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
