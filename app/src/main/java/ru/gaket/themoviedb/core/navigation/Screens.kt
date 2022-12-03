@@ -2,11 +2,9 @@ package ru.gaket.themoviedb.core.navigation
 
 import androidx.fragment.app.Fragment
 import ru.gaket.themoviedb.domain.movies.models.MovieId
-import ru.gaket.themoviedb.presentation.auth.view.AuthFragment
 import ru.gaket.themoviedb.presentation.auth.view.ComposeAuthFragment
-import ru.gaket.themoviedb.presentation.moviedetails.view.MovieDetailsFragment
+import ru.gaket.themoviedb.presentation.moviedetails.view.ComposeMovieDetailsFragment
 import ru.gaket.themoviedb.presentation.movies.view.ComposeMoviesFragment
-import ru.gaket.themoviedb.presentation.movies.view.MoviesFragment
 import ru.gaket.themoviedb.presentation.review.ReviewFragment
 
 interface Screen {
@@ -26,7 +24,7 @@ class MovieDetailsScreen(
     private val title: String,
 ) : Screen {
 
-    override fun destination(): Fragment = MovieDetailsFragment.newInstance(movieId, title)
+    override fun destination(): Fragment = ComposeMovieDetailsFragment.newInstance(movieId, title)
 
     override val tag: String get() = TAG
 
