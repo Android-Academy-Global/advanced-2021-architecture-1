@@ -10,4 +10,5 @@
     <color name="colorReviewLiked">#3FB832</color>
     <color name="colorReviewDisliked">#CF2D2D</color>
     <color name="colorReviewBackground">#F7F7F7</color>
+    <color name="posterBackground">#e5e5e5</color>
 </resources>

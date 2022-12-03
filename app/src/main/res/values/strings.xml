@@ -21,6 +21,8 @@
     <string name="invalid_user_credentials">Invalid user credentials</string>
     <string name="unknown_error">Unknown error</string>
     <!--Review-->
+    <string name="review_button_back">Back</string>
+    <string name="review_button_search_web">Search in WEB</string>
 
     <string name="review_button_rate_movie">Leave you review</string>
     <string name="review_what_did_you_like">What did you like?</string>
@@ -36,6 +38,7 @@
     <string name="review_liked_placeholder">Like: \"%1$s\"</string>
     <string name="review_not_liked_placeholder">Didn\'t like: \"%1$s\"</string>
     <string name="movie_details_rating">Rating:</string>
+    <string name="movie_details_rating_pattern">Rating: %1$d</string>
     <string name="review_add_label">Add review</string>
     <string name="authiorize_to_add_review_label">Click to Autorize to add review</string>
     <string name="review_my_review">My review</string>

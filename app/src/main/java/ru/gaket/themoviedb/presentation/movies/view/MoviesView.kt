@@ -52,7 +52,6 @@ import ru.gaket.themoviedb.core.navigation.Navigator
 import ru.gaket.themoviedb.domain.movies.models.SearchMovie
 import ru.gaket.themoviedb.domain.movies.models.SearchMovieWithMyReview
 import ru.gaket.themoviedb.presentation.movies.viewmodel.MoviesResult
-import ru.gaket.themoviedb.presentation.movies.viewmodel.MoviesResult.EmptyQuery
 import ru.gaket.themoviedb.presentation.movies.viewmodel.MoviesViewModel
 
 @Preview(showSystemUi = true)
@@ -105,10 +104,8 @@ private fun MoviesView(
         if (foundMovies.isEmpty()) {
             Text(
                 text = stringResource(id = R.string.movies_placeholder),
-                style = TextStyle(
-                    color = colorResource(id = R.color.textColorPrimary),
-                    fontSize = 16.sp,
-                ),
+                color = colorResource(id = R.color.textColorPrimary),
+                fontSize = 16.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxSize()
@@ -196,7 +193,11 @@ private fun MovieView(
     onClick: (searchMovie: SearchMovie) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.clickable(onClick = { onClick(movie.movie) })) {
+    Column(
+        modifier = modifier
+            .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.cornerRad)))
+            .clickable(onClick = { onClick(movie.movie) })
+    ) {
         AsyncImage(
             model = movie.movie.thumbnail,
             contentDescription = stringResource(id = R.string.content_cinema_poster),
@@ -206,15 +207,13 @@ private fun MovieView(
             modifier = Modifier
                 .aspectRatio(ratio = 2f / 3f)
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.cornerRad))),
+                .background(color = colorResource(id = R.color.posterBackground)),
         )
         Text(
             text = movie.movie.title.uppercase(),
-            style = TextStyle(
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold,
-                color = colorResource(id = R.color.colorTitles),
-            ),
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Bold,
+            color = colorResource(id = R.color.colorTitles),
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .fillMaxSize()
@@ -225,7 +224,6 @@ private fun MovieView(
                             Color(0x00000000),
                         ),
                     ),
-                    shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
                 )
                 .padding(
                     horizontal = dimensionResource(id = R.dimen.space_small),
