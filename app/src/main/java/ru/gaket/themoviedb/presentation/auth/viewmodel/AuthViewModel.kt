@@ -1,33 +1,36 @@
 package ru.gaket.themoviedb.presentation.auth.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import ru.gaket.themoviedb.domain.auth.AuthInteractor
-import ru.gaket.themoviedb.domain.auth.User
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ru.gaket.themoviedb.R
+import ru.gaket.themoviedb.domain.auth.AuthInteractor
 import ru.gaket.themoviedb.domain.auth.LogInError
+import ru.gaket.themoviedb.domain.auth.User
 import ru.gaket.themoviedb.domain.auth.isAuthorized
+import ru.gaket.themoviedb.util.Result
 import ru.gaket.themoviedb.util.VoidResult
 import javax.inject.Inject
-import ru.gaket.themoviedb.util.Result
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val authInteractor: AuthInteractor,
 ) : ViewModel() {
 
-    private val _authState = MutableLiveData<AuthState>(
-        if (authInteractor.isAuthorized()) {
-            AuthState.Authorized
-        } else {
-            AuthState.Empty
-        }
+    private val _authState = MutableStateFlow(
+        AuthState(
+            isAuthorized = authInteractor.isAuthorized(),
+        )
     )
 
-    val authState: LiveData<AuthState> get() = _authState
+    val authState: StateFlow<AuthState> = _authState
+        .asStateFlow()
 
     fun auth(email: String, password: String) {
         val validatedEmail = User.Email.createIfValid(email)
@@ -35,10 +38,29 @@ class AuthViewModel @Inject constructor(
 
         when {
             (validatedEmail == null) -> {
-                _authState.value = AuthState.InputError.Email
+                _authState.update { value ->
+                    value.copy(
+                        emailError = R.string.email_input_error,
+                        isEmailErrorVisible = true,
+                        passwordError = null,
+                        isPasswordErrorVisible = false,
+                        isBtnEnabled = true,
+                        logInError = null,
+                    )
+                }
             }
             (validatedPassword == null) -> {
-                _authState.value = AuthState.InputError.Password
+                _authState.update { value ->
+                    value.copy(
+                        passwordError = R.string.password_input_error,
+                        isPasswordErrorVisible = true,
+                        emailError = null,
+                        isEmailErrorVisible = false,
+                        isBtnEnabled = true,
+                        isAuthorized = false,
+                        logInError = null,
+                    )
+                }
             }
             else -> {
                 executeAuthRequest(validatedEmail, validatedPassword)
@@ -47,7 +69,18 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun executeAuthRequest(email: User.Email, password: User.Password) {
-        _authState.value = AuthState.Authorizing
+        _authState.update { value ->
+            value.copy(
+                passwordError = null,
+                isPasswordErrorVisible = false,
+                emailError = null,
+                isEmailErrorVisible = false,
+                isBtnEnabled = false,
+                isAuthorized = false,
+                logInError = null,
+            )
+        }
+
         viewModelScope.launch {
             val result = authInteractor.auth(email, password)
             handleAuthResult(result)
@@ -55,9 +88,34 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun handleAuthResult(result: VoidResult<LogInError>) {
-        _authState.value = when (result) {
-            is Result.Success -> AuthState.Authorized
-            is Result.Error -> AuthState.AuthError(result.result)
+        _authState.update { value ->
+            when (result) {
+                is Result.Success -> value.copy(
+                    passwordError = null,
+                    isPasswordErrorVisible = false,
+                    emailError = null,
+                    isEmailErrorVisible = false,
+                    isBtnEnabled = true,
+                    isAuthorized = true,
+                    logInError = null,
+                )
+                is Result.Error -> value.copy(
+                    passwordError = null,
+                    isPasswordErrorVisible = false,
+                    emailError = null,
+                    isEmailErrorVisible = false,
+                    isBtnEnabled = true,
+                    isAuthorized = false,
+                    logInError = result.result.messageResId,
+                )
+            }
         }
     }
 }
+
+@get:StringRes
+internal val LogInError.messageResId: Int
+    get() = when (this) {
+        LogInError.InvalidUserCredentials -> R.string.invalid_user_credentials
+        LogInError.Unknown -> R.string.unknown_error
+    }
