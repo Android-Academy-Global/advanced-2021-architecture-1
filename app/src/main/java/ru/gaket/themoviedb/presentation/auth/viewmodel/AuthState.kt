@@ -5,7 +5,7 @@ data class AuthState(
     val isEmailErrorVisible: Boolean = false,
     val passwordError: Int? = null,
     val isPasswordErrorVisible: Boolean = false,
-    val isBtnEnabled: Boolean = true,
+    val isAuthBtnEnabled: Boolean = true,
     val isAuthorized: Boolean = false,
     val logInError: Int? = null,
 )

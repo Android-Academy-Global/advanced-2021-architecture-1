@@ -44,7 +44,7 @@ class AuthViewModel @Inject constructor(
                         isEmailErrorVisible = true,
                         passwordError = null,
                         isPasswordErrorVisible = false,
-                        isBtnEnabled = true,
+                        isAuthBtnEnabled = true,
                         logInError = null,
                     )
                 }
@@ -56,7 +56,7 @@ class AuthViewModel @Inject constructor(
                         isPasswordErrorVisible = true,
                         emailError = null,
                         isEmailErrorVisible = false,
-                        isBtnEnabled = true,
+                        isAuthBtnEnabled = true,
                         isAuthorized = false,
                         logInError = null,
                     )
@@ -68,6 +68,17 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    fun onEmailOrPasswordChange() {
+        _authState.update { value ->
+            value.copy(
+                emailError = null,
+                isEmailErrorVisible = false,
+                passwordError = null,
+                isPasswordErrorVisible = false,
+            )
+        }
+    }
+
     private fun executeAuthRequest(email: User.Email, password: User.Password) {
         _authState.update { value ->
             value.copy(
@@ -75,7 +86,7 @@ class AuthViewModel @Inject constructor(
                 isPasswordErrorVisible = false,
                 emailError = null,
                 isEmailErrorVisible = false,
-                isBtnEnabled = false,
+                isAuthBtnEnabled = false,
                 isAuthorized = false,
                 logInError = null,
             )
@@ -95,7 +106,7 @@ class AuthViewModel @Inject constructor(
                     isPasswordErrorVisible = false,
                     emailError = null,
                     isEmailErrorVisible = false,
-                    isBtnEnabled = true,
+                    isAuthBtnEnabled = true,
                     isAuthorized = true,
                     logInError = null,
                 )
@@ -104,7 +115,7 @@ class AuthViewModel @Inject constructor(
                     isPasswordErrorVisible = false,
                     emailError = null,
                     isEmailErrorVisible = false,
-                    isBtnEnabled = true,
+                    isAuthBtnEnabled = true,
                     isAuthorized = false,
                     logInError = result.result.messageResId,
                 )

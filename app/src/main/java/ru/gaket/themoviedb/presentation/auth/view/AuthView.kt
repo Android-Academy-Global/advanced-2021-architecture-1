@@ -10,10 +10,12 @@ import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,7 +26,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -37,9 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.filter
 import ru.gaket.themoviedb.R
 import ru.gaket.themoviedb.core.navigation.Navigator
-import ru.gaket.themoviedb.presentation.auth.viewmodel.AuthState
 import ru.gaket.themoviedb.presentation.auth.viewmodel.AuthViewModel
-import ru.gaket.themoviedb.util.showSystemMessage
 
 @Preview
 @Composable
@@ -47,7 +46,12 @@ private fun AuthViewPreview() {
     AuthView(
         emailError = "",
         passwordError = "",
-        authState = AuthState(),
+        loginError = null,
+        isEmailErrorVisible = false,
+        isPasswordErrorVisible = false,
+        isAuthBtnEnabled = true,
+        onEmailChange = { },
+        onPasswordChange = { },
         onAuthClick = { _, _ -> },
     )
 }
@@ -75,7 +79,12 @@ internal fun AuthView(
     AuthView(
         emailError = if (emailError != null) stringResource(emailError) else "",
         passwordError = if (passwordError != null) stringResource(passwordError) else "",
-        authState = authState,
+        loginError = authState.logInError,
+        isEmailErrorVisible = authState.isEmailErrorVisible,
+        isPasswordErrorVisible = authState.isPasswordErrorVisible,
+        isAuthBtnEnabled = authState.isAuthBtnEnabled,
+        onEmailChange = viewModel::onEmailOrPasswordChange,
+        onPasswordChange = viewModel::onEmailOrPasswordChange,
         onAuthClick = viewModel::auth,
     )
 }
@@ -84,11 +93,14 @@ internal fun AuthView(
 private fun AuthView(
     emailError: String,
     passwordError: String,
-    authState: AuthState,
+    loginError: Int?,
+    isEmailErrorVisible: Boolean,
+    isPasswordErrorVisible: Boolean,
+    isAuthBtnEnabled: Boolean,
+    onEmailChange: () -> Unit,
+    onPasswordChange: () -> Unit,
     onAuthClick: (email: String, password: String) -> Unit,
 ) {
-    val loginError = authState.logInError
-
     ShowToastOnLoginErrorIfNeeded(loginError)
 
     Column(
@@ -101,14 +113,17 @@ private fun AuthView(
         var emailInput by remember { mutableStateOf("") }
         OutlinedTextField(
             value = emailInput,
-            onValueChange = { input -> emailInput = input },
+            onValueChange = { input ->
+                emailInput = input
+                onEmailChange()
+            },
             label = { Text(text = stringResource(id = R.string.email)) },
-            isError = authState.isEmailErrorVisible,
+            isError = isEmailErrorVisible,
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier.fillMaxWidth(),
         )
-        if (authState.isEmailErrorVisible) {
+        if (isEmailErrorVisible) {
             Text(
                 text = emailError,
                 color = Color.Red,
@@ -121,9 +136,12 @@ private fun AuthView(
         var passwordVisible by remember { mutableStateOf(false) }
         OutlinedTextField(
             value = passwordInput,
-            onValueChange = { input -> passwordInput = input },
+            onValueChange = { input ->
+                passwordInput = input
+                onPasswordChange()
+            },
             label = { Text(text = stringResource(id = R.string.password)) },
-            isError = authState.isPasswordErrorVisible,
+            isError = isPasswordErrorVisible,
             singleLine = true,
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
@@ -134,7 +152,7 @@ private fun AuthView(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             modifier = Modifier.fillMaxWidth(),
         )
-        if (authState.isPasswordErrorVisible) {
+        if (isPasswordErrorVisible) {
             Text(
                 text = passwordError,
                 color = Color.Red,
@@ -147,7 +165,7 @@ private fun AuthView(
                 onAuthClick(emailInput, passwordInput)
             },
             modifier = Modifier.fillMaxWidth(),
-            enabled = authState.isBtnEnabled,
+            enabled = isAuthBtnEnabled,
         ) {
             Text(text = stringResource(id = R.string.auth))
         }
@@ -155,11 +173,19 @@ private fun AuthView(
 }
 
 @Composable
-private fun ShowToastOnLoginErrorIfNeeded(loginError: Int?) {
+private fun ShowToastOnLoginErrorIfNeeded(
+    loginError: Int?,
+    scaffoldState: ScaffoldState = rememberScaffoldState(),
+) {
     if (loginError == null) return
 
-    val context = LocalContext.current
-    context.showSystemMessage(stringResource(loginError))
+    val errorMessage = stringResource(loginError)
+
+    LaunchedEffect(scaffoldState.snackbarHostState) {
+        scaffoldState.snackbarHostState.showSnackbar(
+            message = errorMessage,
+        )
+    }
 }
 
 @Composable
