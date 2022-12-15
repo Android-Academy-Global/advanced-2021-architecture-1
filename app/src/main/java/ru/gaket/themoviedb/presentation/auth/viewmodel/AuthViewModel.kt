@@ -32,66 +32,29 @@ class AuthViewModel @Inject constructor(
     val authState: StateFlow<AuthState> = _authState
         .asStateFlow()
 
-    fun auth(email: String, password: String) {
-        val validatedEmail = User.Email.createIfValid(email)
-        val validatedPassword = User.Password.createIfValid(password)
+    fun auth() {
+        val authState = _authState.value
+        val validatedEmail = User.Email.createIfValid(authState.emailInput)
+        val validatedPassword = User.Password.createIfValid(authState.passwordInput)
 
-        when {
-            (validatedEmail == null) -> {
-                _authState.update { value ->
-                    value.copy(
-                        emailError = R.string.email_input_error,
-                        isEmailErrorVisible = true,
-                        passwordError = null,
-                        isPasswordErrorVisible = false,
-                        isAuthBtnEnabled = true,
-                        logInError = null,
-                    )
-                }
-            }
-            (validatedPassword == null) -> {
-                _authState.update { value ->
-                    value.copy(
-                        passwordError = R.string.password_input_error,
-                        isPasswordErrorVisible = true,
-                        emailError = null,
-                        isEmailErrorVisible = false,
-                        isAuthBtnEnabled = true,
-                        isAuthorized = false,
-                        logInError = null,
-                    )
-                }
-            }
-            else -> {
-                executeAuthRequest(validatedEmail, validatedPassword)
-            }
-        }
-    }
-
-    fun onEmailOrPasswordChange() {
         _authState.update { value ->
             value.copy(
-                emailError = null,
-                isEmailErrorVisible = false,
-                passwordError = null,
-                isPasswordErrorVisible = false,
-            )
-        }
-    }
-
-    private fun executeAuthRequest(email: User.Email, password: User.Password) {
-        _authState.update { value ->
-            value.copy(
-                passwordError = null,
-                isPasswordErrorVisible = false,
-                emailError = null,
-                isEmailErrorVisible = false,
-                isAuthBtnEnabled = false,
-                isAuthorized = false,
+                emailError = if (validatedEmail == null) R.string.email_input_error else null,
+                isEmailErrorVisible = validatedEmail == null,
+                passwordError = if (validatedPassword == null) R.string.password_input_error else
+                    null,
+                isPasswordErrorVisible = validatedPassword == null,
+                isAuthBtnEnabled = true,
                 logInError = null,
             )
         }
 
+        if (validatedEmail != null && validatedPassword != null) {
+            executeAuthRequest(validatedEmail, validatedPassword)
+        }
+    }
+
+    private fun executeAuthRequest(email: User.Email, password: User.Password) {
         viewModelScope.launch {
             val result = authInteractor.auth(email, password)
             handleAuthResult(result)
@@ -120,6 +83,28 @@ class AuthViewModel @Inject constructor(
                     logInError = result.result.messageResId,
                 )
             }
+        }
+    }
+
+    fun onEmailInput(email: String) {
+        _authState.update { value ->
+            value.copy(
+                emailInput = email,
+                emailError = null,
+                isEmailErrorVisible = false,
+                isAuthBtnEnabled = true,
+            )
+        }
+    }
+
+    fun onPasswordInput(password: String) {
+        _authState.update { value ->
+            value.copy(
+                passwordInput = password,
+                passwordError = null,
+                isPasswordErrorVisible = false,
+                isAuthBtnEnabled = true,
+            )
         }
     }
 }

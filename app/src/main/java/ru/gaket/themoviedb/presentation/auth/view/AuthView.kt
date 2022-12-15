@@ -45,14 +45,16 @@ import ru.gaket.themoviedb.presentation.auth.viewmodel.AuthViewModel
 private fun AuthViewPreview() {
     AuthView(
         emailError = "",
+        emailInput = "",
         passwordError = "",
+        passwordInput = "",
         loginError = null,
         isEmailErrorVisible = false,
         isPasswordErrorVisible = false,
         isAuthBtnEnabled = true,
-        onEmailChange = { },
-        onPasswordChange = { },
-        onAuthClick = { _, _ -> },
+        onEmailChange = { _ -> },
+        onPasswordChange = { _ -> },
+        onAuthClick = { },
     )
 }
 
@@ -77,29 +79,33 @@ internal fun AuthView(
     val passwordError = authState.passwordError
 
     AuthView(
+        emailInput = authState.emailInput,
         emailError = if (emailError != null) stringResource(emailError) else "",
         passwordError = if (passwordError != null) stringResource(passwordError) else "",
         loginError = authState.logInError,
+        passwordInput = authState.passwordInput,
         isEmailErrorVisible = authState.isEmailErrorVisible,
         isPasswordErrorVisible = authState.isPasswordErrorVisible,
         isAuthBtnEnabled = authState.isAuthBtnEnabled,
-        onEmailChange = viewModel::onEmailOrPasswordChange,
-        onPasswordChange = viewModel::onEmailOrPasswordChange,
+        onEmailChange = viewModel::onEmailInput,
+        onPasswordChange = viewModel::onPasswordInput,
         onAuthClick = viewModel::auth,
     )
 }
 
 @Composable
 private fun AuthView(
+    emailInput: String,
     emailError: String,
     passwordError: String,
-    loginError: Int?,
+    onEmailChange: (String) -> Unit,
     isEmailErrorVisible: Boolean,
+    passwordInput: String,
     isPasswordErrorVisible: Boolean,
+    onPasswordChange: (String) -> Unit,
+    loginError: Int?,
     isAuthBtnEnabled: Boolean,
-    onEmailChange: () -> Unit,
-    onPasswordChange: () -> Unit,
-    onAuthClick: (email: String, password: String) -> Unit,
+    onAuthClick: () -> Unit,
 ) {
     ShowToastOnLoginErrorIfNeeded(loginError)
 
@@ -110,13 +116,9 @@ private fun AuthView(
             .fillMaxSize()
             .padding(horizontal = dimensionResource(id = R.dimen.space_normal)),
     ) {
-        var emailInput by remember { mutableStateOf("") }
         OutlinedTextField(
             value = emailInput,
-            onValueChange = { input ->
-                emailInput = input
-                onEmailChange()
-            },
+            onValueChange = { input -> onEmailChange(input) },
             label = { Text(text = stringResource(id = R.string.email)) },
             isError = isEmailErrorVisible,
             singleLine = true,
@@ -132,14 +134,10 @@ private fun AuthView(
             )
         }
 
-        var passwordInput by remember { mutableStateOf("") }
         var passwordVisible by remember { mutableStateOf(false) }
         OutlinedTextField(
             value = passwordInput,
-            onValueChange = { input ->
-                passwordInput = input
-                onPasswordChange()
-            },
+            onValueChange = { input -> onPasswordChange(input) },
             label = { Text(text = stringResource(id = R.string.password)) },
             isError = isPasswordErrorVisible,
             singleLine = true,
@@ -161,9 +159,7 @@ private fun AuthView(
             )
         }
         Button(
-            onClick = {
-                onAuthClick(emailInput, passwordInput)
-            },
+            onClick = { onAuthClick() },
             modifier = Modifier.fillMaxWidth(),
             enabled = isAuthBtnEnabled,
         ) {
