@@ -24,10 +24,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,32 +41,39 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import ru.gaket.themoviedb.R
 import ru.gaket.themoviedb.core.navigation.MovieDetailsScreen
 import ru.gaket.themoviedb.core.navigation.Navigator
 import ru.gaket.themoviedb.domain.movies.models.SearchMovie
 import ru.gaket.themoviedb.domain.movies.models.SearchMovieWithMyReview
-import ru.gaket.themoviedb.presentation.movies.viewmodel.MoviesResult
 import ru.gaket.themoviedb.presentation.movies.viewmodel.MoviesViewModel
 
 @Preview(showSystemUi = true)
 @Composable
 private fun MoviesViewPreview() {
     MoviesView(
-        foundMovies = emptyList(),
+        queryInput = "",
+        movies = emptyList(),
         isSearchInProgress = false,
+        searchResultPlaceholder = null,
         onNewQuery = {},
         onMovieClick = {},
     )
 }
 
+@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 internal fun MoviesView(viewModel: MoviesViewModel, navigator: Navigator) {
-    val result by viewModel.searchResult.observeAsState()
+    val state by viewModel.searchResult.collectAsStateWithLifecycle()
+
     MoviesView(
-        foundMovies = (result as? MoviesResult.SuccessResult)?.result ?: emptyList(),
-        isSearchInProgress = result is MoviesResult.Loading,
+        queryInput = state.query,
+        movies = state.movies,
+        isSearchInProgress = state.isMoviesLoading,
+        searchResultPlaceholder = state.resultPlaceholder,
         onNewQuery = viewModel::onNewQuery,
         onMovieClick = { movie ->
             navigator.navigateTo(MovieDetailsScreen(movie.id, movie.title))
@@ -80,20 +83,18 @@ internal fun MoviesView(viewModel: MoviesViewModel, navigator: Navigator) {
 
 @Composable
 private fun MoviesView(
-    foundMovies: List<SearchMovieWithMyReview>,
+    queryInput: String,
+    movies: List<SearchMovieWithMyReview>,
+    searchResultPlaceholder: Int?,
     isSearchInProgress: Boolean,
     onNewQuery: (String) -> Unit,
     onMovieClick: (movie: SearchMovie) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
-        var input by remember { mutableStateOf("") }
         SearchView(
-            input = input,
+            input = queryInput,
             hint = stringResource(id = R.string.hint_search_query),
-            onInputChanged = {
-                input = it
-                onNewQuery(it)
-            },
+            onInputChanged = { input -> onNewQuery(input) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp)
@@ -101,31 +102,31 @@ private fun MoviesView(
         ) {
             SearchProgressView(isInProgress = isSearchInProgress)
         }
-        if (foundMovies.isEmpty()) {
+        if (searchResultPlaceholder != null) {
             Text(
-                text = stringResource(id = R.string.movies_placeholder),
+                text = stringResource(id = searchResultPlaceholder),
                 color = colorResource(id = R.color.textColorPrimary),
                 fontSize = 16.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(horizontal = 16.dp)
                     .wrapContentHeight(),
             )
-        } else {
-            // TODO Hide keyboard on scroll
-            LazyVerticalGrid(
-                columns = Fixed(count = integerResource(id = R.integer.search_results_span_count)),
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                items(foundMovies) { movie ->
-                    MovieView(
-                        movie = movie,
-                        onClick = { searchMovie ->
-                            onMovieClick(searchMovie)
-                        },
-                        modifier = Modifier.padding(16.dp),
-                    )
-                }
+        }
+        // TODO Hide keyboard on scroll
+        LazyVerticalGrid(
+            columns = Fixed(count = integerResource(id = R.integer.search_results_span_count)),
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            items(movies) { movie ->
+                MovieView(
+                    movie = movie,
+                    onClick = { searchMovie ->
+                        onMovieClick(searchMovie)
+                    },
+                    modifier = Modifier.padding(16.dp),
+                )
             }
         }
     }

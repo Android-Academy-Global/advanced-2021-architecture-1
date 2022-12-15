@@ -6,11 +6,10 @@ import ru.gaket.themoviedb.domain.movies.models.SearchMovieWithMyReview
 /**
  * Class containing the result of the [SearchMovie] request
  */
-sealed class MoviesResult {
-
-    object Loading : MoviesResult()
-    object EmptyResult : MoviesResult()
-    object EmptyQuery : MoviesResult()
-    data class SuccessResult(val result: List<SearchMovieWithMyReview>) : MoviesResult()
-    data class ErrorResult(val e: Throwable) : MoviesResult()
-}
+data class MoviesResult(
+    val query: String = "",
+    val isMoviesLoading: Boolean = false,
+    val resultPlaceholder: Int? = null,
+    val movies: List<SearchMovieWithMyReview> = emptyList(),
+    val error: Throwable? = null,
+)
