@@ -46,15 +46,15 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
         }
     }
 
-    private val reviewsAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        ReviewsAdapter(onReviewClick = viewModel::onReviewClick)
-    }
+//    private val reviewsAdapter by lazy(LazyThreadSafetyMode.NONE) {
+//        ReviewsAdapter(onReviewClick = viewModel::onReviewClick)
+//    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.state.observe(viewLifecycleOwner, ::render)
-        viewModel.events.observe(viewLifecycleOwner, ::handleEvent)
+//        viewModel.state.observe(viewLifecycleOwner, ::render)
+//        viewModel.events.observe(viewLifecycleOwner, ::handleEvent)
 
         setupListeners()
         setupReviewsList()
@@ -82,7 +82,7 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
         binding.tvMovieDetailsOverview.text = state.movie.overview
         binding.tvMovieDetailsRating.text = state.movie.rating.toString()
         updatePoster(state.movie.thumbnail)
-        reviewsAdapter.submitList(state.allReviews)
+//        reviewsAdapter.submitList(state.allReviews)
     }
 
     private fun showLoading(show: Boolean) {
@@ -111,7 +111,7 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
     }
 
     private fun setupReviewsList() {
-        binding.rvMovieDetailsReviews.adapter = reviewsAdapter
+//        binding.rvMovieDetailsReviews.adapter = reviewsAdapter
     }
 
     private fun setupPoster() {

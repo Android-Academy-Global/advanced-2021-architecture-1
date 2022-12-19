@@ -1,26 +1,31 @@
 package ru.gaket.themoviedb.presentation.moviedetails.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ru.gaket.themoviedb.R
+import ru.gaket.themoviedb.core.navigation.AuthScreen
+import ru.gaket.themoviedb.core.navigation.ReviewScreen
+import ru.gaket.themoviedb.core.navigation.Screen
 import ru.gaket.themoviedb.data.movies.MoviesRepository
 import ru.gaket.themoviedb.domain.auth.AuthInteractor
 import ru.gaket.themoviedb.domain.auth.isAuthorized
 import ru.gaket.themoviedb.domain.auth.observeIsAuthorized
 import ru.gaket.themoviedb.domain.movies.models.MovieId
 import ru.gaket.themoviedb.domain.movies.models.MovieWithReviews
+import ru.gaket.themoviedb.domain.review.models.MyReview
 import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsReview
+import ru.gaket.themoviedb.presentation.moviedetails.model.getCalendarYear
 import ru.gaket.themoviedb.util.Result
 
 class MovieDetailsViewModel @AssistedInject constructor(
@@ -30,81 +35,118 @@ class MovieDetailsViewModel @AssistedInject constructor(
     @Assisted private val title: String,
 ) : ViewModel() {
 
-    private val _state = MutableLiveData<MovieDetailsState>(MovieDetailsState.Loading(title = title))
-    val state: LiveData<MovieDetailsState> get() = _state
-
-    private val _events = MutableSharedFlow<MovieDetailsEvent>()
-    val events: LiveData<MovieDetailsEvent>
-        get() = _events
-            .asLiveData(viewModelScope.coroutineContext)
-
-    init {
-        viewModelScope.launch {
-            authInteractor.observeIsAuthorized()
-                .flatMapLatest { isAuthorized ->
-                    moviesRepository.observeMovieDetailsWithReviews(movieId)
-                        .map { details -> details to isAuthorized }
-                }
-                .distinctUntilChanged()
-                .collect { (detailsResult, isAuthorized) ->
-                    _state.value = mapState(detailsResult, isAuthorized)
-                }
-        }
-    }
-
-    fun onReviewClick(review: MovieDetailsReview) =
-        when (review) {
-            is MovieDetailsReview.Add -> onAddReviewClick()
-            is MovieDetailsReview.Existing -> Unit
-        }
-
-    private fun onAddReviewClick() {
-        val event = if (authInteractor.isAuthorized()) {
-            MovieDetailsEvent.OpenScreen.Review
-        } else {
-            MovieDetailsEvent.OpenScreen.Auth
-        }
-        viewModelScope.launch {
-            _events.emit(event)
-        }
-    }
-
     @AssistedFactory
     interface Factory {
 
         fun create(movieId: MovieId, title: String): MovieDetailsViewModel
     }
-}
 
-private fun mapState(
-    detailsResult: Result<MovieWithReviews, Throwable>,
-    isAuthorized: Boolean,
-): MovieDetailsState =
-    when (detailsResult) {
-        is Result.Success -> mapSuccessState(detailsResult.result, isAuthorized)
-        is Result.Error -> MovieDetailsState.Error
+    private val _movieDetailsState = MutableStateFlow(MovieDetailsStateV2(
+        screenToNavigate = getScreenToNavigateOnReviewClick(),
+        loadingTitle = title,
+        isMovieDetailsLoading = true,
+    ))
+    val movieDetailsState: StateFlow<MovieDetailsStateV2> = _movieDetailsState.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            authInteractor
+                .observeIsAuthorized()
+                .flatMapLatest { isAuthorized ->
+                    moviesRepository
+                        .observeMovieDetailsWithReviews(movieId)
+                        .map { details -> details to isAuthorized }
+                }
+                .distinctUntilChanged()
+                .collect { (detailsResult, isAuthorized) ->
+                    handleLoadingMovieDetailsResult(detailsResult, isAuthorized)
+                }
+        }
     }
 
-private fun mapSuccessState(
-    details: MovieWithReviews,
-    isAuthorized: Boolean,
-): MovieDetailsState.Result {
-    val allReviews = mutableListOf<MovieDetailsReview>()
-
-    val myReviewOrAddButton = if (details.myReview != null) {
-        MovieDetailsReview.Existing.My(review = details.myReview.review)
-    } else {
-        MovieDetailsReview.Add(isAuthorized = isAuthorized)
+    private fun handleLoadingMovieDetailsResult(
+        detailsResult: Result<MovieWithReviews, Throwable>,
+        isAuthorized: Boolean,
+    ) {
+        when (detailsResult) {
+            is Result.Success -> emitSuccessState(detailsResult.result, isAuthorized)
+            is Result.Error -> emitErrorState(detailsResult)
+        }
     }
 
-    val someoneReviews = details.someoneElseReviews
-        .map(MovieDetailsReview.Existing::Someone)
+    private fun emitSuccessState(
+        details: MovieWithReviews,
+        isAuthorized: Boolean,
+    ) {
+        val movieReviews = extractMovieReviewsFromMovieDetails(details, isAuthorized)
+        val movie = details.movie
 
-    allReviews.add(myReviewOrAddButton)
-    allReviews.addAll(someoneReviews)
+        _movieDetailsState.update { state ->
+            state.copy(
+                screenToNavigate = getScreenToNavigateOnReviewClick(),
+                moviePosterUrl = movie.thumbnail,
+                movieTitle = movie.title,
+                movieYear = movie.releaseDate.getCalendarYear()?.toString().orEmpty(),
+                movieGenres = movie.genres,
+                movieRating = movie.rating,
+                movieOverview = movie.overview,
+                movieReviews = movieReviews,
+                error = null,
+                isMovieDetailsLoading = false,
+            )
+        }
+    }
 
-    return MovieDetailsState.Result(
-        movie = details.movie,
-        allReviews = allReviews
-    )
+    private fun extractMovieReviewsFromMovieDetails(
+        details: MovieWithReviews,
+        isAuthorized: Boolean,
+    ): List<MovieDetailsReview> {
+        val myReviewOrAddButton = getReviewExistingOrAddButton(details.myReview, isAuthorized)
+        val someoneReviews = details.someoneElseReviews.map { item ->
+            MovieDetailsReview.Existing.Someone(item, item.author.value)
+        }
+
+        return mutableListOf<MovieDetailsReview>().apply {
+            add(myReviewOrAddButton)
+            addAll(someoneReviews)
+        }
+    }
+
+    private fun getReviewExistingOrAddButton(
+        myReview: MyReview?,
+        isAuthorized: Boolean,
+    ): MovieDetailsReview {
+        val myReviewOrAddButton = if (myReview != null) {
+            MovieDetailsReview.Existing.My(myReview.review, R.string.review_my_review)
+        } else {
+            MovieDetailsReview.Add(if (isAuthorized) R.string.review_add_label else R.string.authiorize_to_add_review_label)
+        }
+
+        return myReviewOrAddButton
+    }
+
+    private fun emitErrorState(detailsResult: Result.Error<Throwable>) {
+        _movieDetailsState.update { state ->
+            state.copy(
+                screenToNavigate = getScreenToNavigateOnReviewClick(),
+                moviePosterUrl = "",
+                movieTitle = "",
+                movieYear = "",
+                movieGenres = "",
+                movieRating = 0,
+                movieOverview = "",
+                movieReviews = emptyList(),
+                error = detailsResult.result,
+                isMovieDetailsLoading = false,
+            )
+        }
+    }
+
+    private fun getScreenToNavigateOnReviewClick(): Screen {
+        return if (authInteractor.isAuthorized()) {
+            ReviewScreen(movieId)
+        } else {
+            AuthScreen()
+        }
+    }
 }

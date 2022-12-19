@@ -26,7 +26,6 @@ import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,15 +40,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import ru.gaket.themoviedb.R
 import ru.gaket.themoviedb.core.navigation.Navigator
 import ru.gaket.themoviedb.core.navigation.WebNavigator
+import ru.gaket.themoviedb.domain.review.models.Review
 import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsReview
 import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsReview.Add
 import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsReview.Existing
-import ru.gaket.themoviedb.presentation.moviedetails.model.getCalendarYear
-import ru.gaket.themoviedb.presentation.moviedetails.viewmodel.MovieDetailsState.Result
 import ru.gaket.themoviedb.presentation.moviedetails.viewmodel.MovieDetailsViewModel
 
 @Preview
@@ -63,35 +63,30 @@ private fun MovieDetailsViewPreview() {
         movieRating = 5,
         movieOverview = "Lorem ipsum dolor mit amet",
         movieReviews = emptyList(),
-        onReviewClick = {},
+        onAddReviewClick = {},
         onBackClick = {},
         onWebSearchClick = {},
     )
 }
 
+@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 internal fun MovieDetailsView(
     viewModel: MovieDetailsViewModel,
     navigator: Navigator,
     webNavigator: WebNavigator,
 ) {
-    val state by viewModel.state.observeAsState()
-    val moviePosterUrl = (state as? Result)?.movie?.thumbnail.orEmpty()
-    val movieTitle = (state as? Result)?.movie?.title.orEmpty()
-    val movieYear = (state as? Result)?.movie?.releaseDate?.getCalendarYear()?.toString().orEmpty()
-    val movieGenres = (state as? Result)?.movie?.genres.orEmpty()
-    val movieRating = (state as? Result)?.movie?.rating ?: 0
-    val movieOverview = (state as? Result)?.movie?.overview.orEmpty()
-    val movieReviews = (state as? Result)?.allReviews.orEmpty()
+    val state by viewModel.movieDetailsState.collectAsStateWithLifecycle()
 
-    MovieDetailsView(moviePosterUrl = moviePosterUrl,
-        movieTitle = movieTitle,
-        movieYear = movieYear,
-        movieGenres = movieGenres,
-        movieRating = movieRating,
-        movieOverview = movieOverview,
-        movieReviews = movieReviews,
-        onReviewClick = viewModel::onReviewClick,
+    MovieDetailsView(
+        moviePosterUrl = state.moviePosterUrl,
+        movieTitle = state.movieTitle,
+        movieYear = state.movieYear,
+        movieGenres = state.movieGenres,
+        movieRating = state.movieRating,
+        movieOverview = state.movieOverview,
+        movieReviews = state.movieReviews,
+        onAddReviewClick = { navigator.navigateTo(state.screenToNavigate) },
         onBackClick = navigator::back,
         onWebSearchClick = {
             webNavigator.navigateTo(viewModel.movieId)
@@ -107,7 +102,7 @@ private fun MovieDetailsView(
     movieRating: Int,
     movieOverview: String,
     movieReviews: List<MovieDetailsReview>,
-    onReviewClick: (item: MovieDetailsReview) -> Unit,
+    onAddReviewClick: () -> Unit,
     onBackClick: () -> Unit,
     onWebSearchClick: () -> Unit,
 ) {
@@ -135,10 +130,17 @@ private fun MovieDetailsView(
             modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.space_normal)),
         )
         LazyRow(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.space_normal))) {
-            items(movieReviews) {
-                when (it) {
-                    is Add -> AddReviewItem(item = it, onClick = onReviewClick)
-                    is Existing -> ExistingReviewItem(item = it, onClick = onReviewClick)
+            items(movieReviews) { review ->
+                when (review) {
+                    is Add -> AddReviewItem(item = review, onClick = onAddReviewClick)
+                    is Existing.My -> ExistingReviewItem(
+                        text = stringResource(id = review.textRes),
+                        review = review.review,
+                    )
+                    is Existing.Someone -> ExistingReviewItem(
+                        text = review.text,
+                        review = review.review,
+                    )
                 }
             }
         }
@@ -226,7 +228,7 @@ private fun MovieDetails(
 @Composable
 private fun AddReviewItem(
     item: Add,
-    onClick: (item: Add) -> Unit,
+    onClick: () -> Unit,
 ) {
     Card(
         elevation = dimensionResource(id = R.dimen.reviewElevation),
@@ -235,23 +237,22 @@ private fun AddReviewItem(
         modifier = Modifier
             .size(width = 200.dp, height = 300.dp)
             .padding(
-                horizontal = dimensionResource(id = R.dimen.space_small),
+                horizontal = dimensionResource(id = R.dimen.space_normal),
                 vertical = dimensionResource(id = R.dimen.space_medium),
             )
-            .clickable(onClick = { onClick(item) }),
+            .clickable(onClick = { onClick() }),
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Center,
             modifier = Modifier.padding(all = dimensionResource(id = R.dimen.space_medium)),
         ) {
-            Icon(imageVector = Filled.Add, contentDescription = null) // TODO Move text to presentation layer
+            Icon(
+                imageVector = Filled.Add,
+                contentDescription = null,
+            )
             Text(
-                text = if (item.isAuthorized) {
-                    stringResource(id = R.string.review_add_label)
-                } else {
-                    stringResource(id = R.string.authiorize_to_add_review_label)
-                },
+                text = stringResource(item.textRes),
                 textAlign = TextAlign.Center,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
@@ -262,8 +263,8 @@ private fun AddReviewItem(
 
 @Composable
 private fun ExistingReviewItem(
-    item: Existing,
-    onClick: (item: Existing) -> Unit,
+    text: String,
+    review: Review,
 ) {
     Card(
         elevation = dimensionResource(id = R.dimen.reviewElevation),
@@ -275,28 +276,23 @@ private fun ExistingReviewItem(
                 horizontal = dimensionResource(id = R.dimen.space_small),
                 vertical = dimensionResource(id = R.dimen.space_medium),
             )
-            .clickable(onClick = { onClick(item) }),
     ) {
         Text(
-            // TODO Move to presentation layer
-            text = when (item) {
-                is Existing.My -> stringResource(id = R.string.review_my_review)
-                is Existing.Someone -> item.info.author.value
-            },
+            text = text,
             overflow = TextOverflow.Ellipsis,
             maxLines = 2,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
         )
         Text(
-            text = item.review.liked,
+            text = review.liked,
             overflow = TextOverflow.Ellipsis,
             maxLines = 4,
             fontSize = 14.sp,
             color = colorResource(id = R.color.colorReviewLiked),
         )
         Text(
-            text = item.review.liked,
+            text = review.liked,
             overflow = TextOverflow.Ellipsis,
             maxLines = 4,
             fontSize = 14.sp,

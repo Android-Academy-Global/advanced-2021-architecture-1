@@ -6,6 +6,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
+import dagger.hilt.android.AndroidEntryPoint
 import ru.gaket.themoviedb.R
 import ru.gaket.themoviedb.core.navigation.Navigator
 import ru.gaket.themoviedb.core.navigation.WebNavigator
@@ -14,6 +15,7 @@ import ru.gaket.themoviedb.presentation.moviedetails.viewmodel.MovieDetailsViewM
 import ru.gaket.themoviedb.util.createAbstractViewModelFactory
 import javax.inject.Inject
 
+@AndroidEntryPoint
 internal class ComposeMovieDetailsFragment : Fragment(R.layout.fragment_compose) {
 
     @Inject
@@ -52,7 +54,7 @@ internal class ComposeMovieDetailsFragment : Fragment(R.layout.fragment_compose)
         private const val ARG_MOVIE_ID = "ARG_MOVIE_ID"
         private const val ARG_MOVIE_TITLE = "ARG_MOVIE_TITLE"
 
-        fun newInstance(movieId: Long, title: String): MovieDetailsFragment = MovieDetailsFragment()
+        fun newInstance(movieId: Long, title: String): ComposeMovieDetailsFragment = ComposeMovieDetailsFragment()
             .apply {
                 arguments = bundleOf(
                     ARG_MOVIE_ID to movieId,
