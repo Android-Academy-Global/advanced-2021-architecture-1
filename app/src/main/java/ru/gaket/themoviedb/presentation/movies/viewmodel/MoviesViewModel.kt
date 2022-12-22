@@ -46,7 +46,6 @@ class MoviesViewModel @Inject constructor(
         _searchResult.update { value ->
             value.copy(
                 query = query,
-                error = null,
             )
         }
         queryFlow.value = query
@@ -91,7 +90,6 @@ class MoviesViewModel @Inject constructor(
             value.copy(
                 isMoviesLoading = false,
                 movies = emptyList(),
-                error = IllegalArgumentException("Search movies from server error!"),
                 resultPlaceholder = R.string.search_error,
             )
         }

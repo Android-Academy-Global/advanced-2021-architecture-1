@@ -94,7 +94,7 @@ private fun MoviesView(
         SearchView(
             input = queryInput,
             hint = stringResource(id = R.string.hint_search_query),
-            onInputChanged = { input -> onNewQuery(input) },
+            onInputChanged = onNewQuery,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp)
@@ -122,9 +122,7 @@ private fun MoviesView(
             items(movies) { movie ->
                 MovieView(
                     movie = movie,
-                    onClick = { searchMovie ->
-                        onMovieClick(searchMovie)
-                    },
+                    onClick = onMovieClick,
                     modifier = Modifier.padding(16.dp),
                 )
             }

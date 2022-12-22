@@ -11,5 +11,4 @@ data class MoviesResult(
     val isMoviesLoading: Boolean = false,
     val resultPlaceholder: Int? = null,
     val movies: List<SearchMovieWithMyReview> = emptyList(),
-    val error: Throwable? = null,
 )
