@@ -118,7 +118,7 @@ private fun AuthView(
     ) {
         OutlinedTextField(
             value = emailInput,
-            onValueChange = { input -> onEmailChange(input) },
+            onValueChange = onEmailChange,
             label = { Text(text = stringResource(id = R.string.email)) },
             isError = isEmailErrorVisible,
             singleLine = true,
@@ -137,7 +137,7 @@ private fun AuthView(
         var passwordVisible by remember { mutableStateOf(false) }
         OutlinedTextField(
             value = passwordInput,
-            onValueChange = { input -> onPasswordChange(input) },
+            onValueChange = onPasswordChange,
             label = { Text(text = stringResource(id = R.string.password)) },
             isError = isPasswordErrorVisible,
             singleLine = true,
@@ -159,7 +159,7 @@ private fun AuthView(
             )
         }
         Button(
-            onClick = { onAuthClick() },
+            onClick = onAuthClick,
             modifier = Modifier.fillMaxWidth(),
             enabled = isAuthBtnEnabled,
         ) {
