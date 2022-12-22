@@ -80,7 +80,7 @@ fun View.hideKeyboard() {
     imm.hideSoftInputFromWindow(windowToken, 0)
 }
 
-fun Activity.showSystemMessage(text: String, longDuration: Boolean = false) =
+fun Context.showSystemMessage(text: String, longDuration: Boolean = false) =
     Toast.makeText(this, text, if (longDuration) Toast.LENGTH_LONG else Toast.LENGTH_SHORT)
         .show()
 

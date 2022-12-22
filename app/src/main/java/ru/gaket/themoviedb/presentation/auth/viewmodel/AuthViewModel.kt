@@ -1,53 +1,60 @@
 package ru.gaket.themoviedb.presentation.auth.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import ru.gaket.themoviedb.domain.auth.AuthInteractor
-import ru.gaket.themoviedb.domain.auth.User
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ru.gaket.themoviedb.R
+import ru.gaket.themoviedb.domain.auth.AuthInteractor
 import ru.gaket.themoviedb.domain.auth.LogInError
+import ru.gaket.themoviedb.domain.auth.User
 import ru.gaket.themoviedb.domain.auth.isAuthorized
+import ru.gaket.themoviedb.util.Result
 import ru.gaket.themoviedb.util.VoidResult
 import javax.inject.Inject
-import ru.gaket.themoviedb.util.Result
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val authInteractor: AuthInteractor,
 ) : ViewModel() {
 
-    private val _authState = MutableLiveData<AuthState>(
-        if (authInteractor.isAuthorized()) {
-            AuthState.Authorized
-        } else {
-            AuthState.Empty
-        }
+    private val _authState = MutableStateFlow(
+        AuthState(
+            isAuthorized = authInteractor.isAuthorized(),
+        )
     )
 
-    val authState: LiveData<AuthState> get() = _authState
+    val authState: StateFlow<AuthState> = _authState
+        .asStateFlow()
 
-    fun auth(email: String, password: String) {
-        val validatedEmail = User.Email.createIfValid(email)
-        val validatedPassword = User.Password.createIfValid(password)
+    fun auth() {
+        val authState = _authState.value
+        val validatedEmail = User.Email.createIfValid(authState.emailInput)
+        val validatedPassword = User.Password.createIfValid(authState.passwordInput)
 
-        when {
-            (validatedEmail == null) -> {
-                _authState.value = AuthState.InputError.Email
-            }
-            (validatedPassword == null) -> {
-                _authState.value = AuthState.InputError.Password
-            }
-            else -> {
-                executeAuthRequest(validatedEmail, validatedPassword)
-            }
+        _authState.update { value ->
+            value.copy(
+                emailError = if (validatedEmail == null) R.string.email_input_error else null,
+                isEmailErrorVisible = validatedEmail == null,
+                passwordError = if (validatedPassword == null) R.string.password_input_error else
+                    null,
+                isPasswordErrorVisible = validatedPassword == null,
+                isAuthBtnEnabled = true,
+                logInError = null,
+            )
+        }
+
+        if (validatedEmail != null && validatedPassword != null) {
+            executeAuthRequest(validatedEmail, validatedPassword)
         }
     }
 
     private fun executeAuthRequest(email: User.Email, password: User.Password) {
-        _authState.value = AuthState.Authorizing
         viewModelScope.launch {
             val result = authInteractor.auth(email, password)
             handleAuthResult(result)
@@ -55,9 +62,56 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun handleAuthResult(result: VoidResult<LogInError>) {
-        _authState.value = when (result) {
-            is Result.Success -> AuthState.Authorized
-            is Result.Error -> AuthState.AuthError(result.result)
+        _authState.update { value ->
+            when (result) {
+                is Result.Success -> value.copy(
+                    passwordError = null,
+                    isPasswordErrorVisible = false,
+                    emailError = null,
+                    isEmailErrorVisible = false,
+                    isAuthBtnEnabled = true,
+                    isAuthorized = true,
+                    logInError = null,
+                )
+                is Result.Error -> value.copy(
+                    passwordError = null,
+                    isPasswordErrorVisible = false,
+                    emailError = null,
+                    isEmailErrorVisible = false,
+                    isAuthBtnEnabled = true,
+                    isAuthorized = false,
+                    logInError = result.result.messageResId,
+                )
+            }
+        }
+    }
+
+    fun onEmailInput(email: String) {
+        _authState.update { value ->
+            value.copy(
+                emailInput = email,
+                emailError = null,
+                isEmailErrorVisible = false,
+                isAuthBtnEnabled = true,
+            )
+        }
+    }
+
+    fun onPasswordInput(password: String) {
+        _authState.update { value ->
+            value.copy(
+                passwordInput = password,
+                passwordError = null,
+                isPasswordErrorVisible = false,
+                isAuthBtnEnabled = true,
+            )
         }
     }
 }
+
+@get:StringRes
+internal val LogInError.messageResId: Int
+    get() = when (this) {
+        LogInError.InvalidUserCredentials -> R.string.invalid_user_credentials
+        LogInError.Unknown -> R.string.unknown_error
+    }
