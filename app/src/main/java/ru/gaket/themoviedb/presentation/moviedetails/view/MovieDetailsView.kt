@@ -3,6 +3,7 @@ package ru.gaket.themoviedb.presentation.moviedetails.view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement.Center
+import androidx.compose.foundation.layout.Arrangement.SpaceBetween
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -277,26 +278,32 @@ private fun ExistingReviewItem(
                 vertical = dimensionResource(id = R.dimen.space_medium),
             )
     ) {
-        Text(
-            text = text,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 2,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-        )
-        Text(
-            text = review.liked,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 4,
-            fontSize = 14.sp,
-            color = colorResource(id = R.color.colorReviewLiked),
-        )
-        Text(
-            text = review.liked,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 4,
-            fontSize = 14.sp,
-            color = colorResource(id = R.color.colorReviewDisliked),
-        )
+        Column(
+            verticalArrangement = SpaceBetween,
+            modifier = Modifier.padding(all = dimensionResource(id = R.dimen.space_medium)),
+        ) {
+            Text(
+                text = text,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 2,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+            )
+            Text(
+                text = review.liked,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 4,
+                fontSize = 14.sp,
+                color = colorResource(id = R.color.colorReviewLiked),
+            )
+            Text(
+                text = review.liked,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 4,
+                fontSize = 14.sp,
+                color = colorResource(id = R.color.colorReviewDisliked),
+                modifier = Modifier.padding(top = dimensionResource(id = R.dimen.space_small))
+            )
+        }
     }
 }
