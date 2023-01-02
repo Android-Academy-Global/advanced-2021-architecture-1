@@ -139,7 +139,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.kotlinCoroutines"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlinCoroutines"
 
-    implementation platform("com.google.firebase:firebase-bom:28.4.1")
+    implementation platform("com.google.firebase:firebase-bom:31.0.2")
     implementation "com.google.firebase:firebase-auth"
     implementation "com.google.firebase:firebase-firestore-ktx"
 }

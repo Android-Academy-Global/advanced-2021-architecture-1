@@ -23,7 +23,9 @@ import ru.gaket.themoviedb.domain.review.models.CreateReviewForm
 import ru.gaket.themoviedb.domain.review.models.CreateReviewStep
 import ru.gaket.themoviedb.domain.review.repository.CreateReviewScopedRepository
 import ru.gaket.themoviedb.presentation.review.rating.RatingFragment
+import ru.gaket.themoviedb.presentation.review.whatliked.ComposeWhatLikeFragment
 import ru.gaket.themoviedb.presentation.review.whatliked.WhatLikeFragment
+import ru.gaket.themoviedb.presentation.review.whatnotliked.ComposeWhatNotLikeFragment
 import ru.gaket.themoviedb.presentation.review.whatnotliked.WhatNotLikeFragment
 import ru.gaket.themoviedb.util.createAbstractViewModelFactory
 import javax.inject.Inject
@@ -85,8 +87,8 @@ class ReviewFragment : Fragment(R.layout.fragment_review) {
 
         val currentFragmentClass: Class<Fragment>? = childFragmentManager.findFragmentById(containerId)?.javaClass
         val newFragmentClass: Class<out Fragment>? = when (step) {
-            CreateReviewStep.WHAT_LIKED -> WhatLikeFragment::class.java
-            CreateReviewStep.WHAT_NOT_LIKED -> WhatNotLikeFragment::class.java
+            CreateReviewStep.WHAT_LIKED -> ComposeWhatLikeFragment::class.java
+            CreateReviewStep.WHAT_NOT_LIKED -> ComposeWhatNotLikeFragment::class.java
             CreateReviewStep.RATING -> RatingFragment::class.java
             CreateReviewStep.FINISH -> null
         }
