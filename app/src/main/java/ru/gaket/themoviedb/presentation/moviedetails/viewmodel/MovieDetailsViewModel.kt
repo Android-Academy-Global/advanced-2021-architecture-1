@@ -41,12 +41,12 @@ class MovieDetailsViewModel @AssistedInject constructor(
         fun create(movieId: MovieId, title: String): MovieDetailsViewModel
     }
 
-    private val _movieDetailsState = MutableStateFlow(MovieDetailsStateV2(
+    private val _movieDetailsState = MutableStateFlow(MovieDetailsState(
         screenToNavigate = getScreenToNavigateOnReviewClick(),
         loadingTitle = title,
         isMovieDetailsLoading = true,
     ))
-    val movieDetailsState: StateFlow<MovieDetailsStateV2> = _movieDetailsState.asStateFlow()
+    val movieDetailsState: StateFlow<MovieDetailsState> = _movieDetailsState.asStateFlow()
 
     init {
         viewModelScope.launch {

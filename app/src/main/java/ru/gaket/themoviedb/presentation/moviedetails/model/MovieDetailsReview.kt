@@ -7,32 +7,13 @@ import java.util.*
 
 sealed class MovieDetailsReview {
 
-//    abstract val id: Id?
-
     data class Add(
         val textRes: Int,
     ) : MovieDetailsReview()
-////    {
-//
-////        override val id: Id? get() = null
-////    }
-//
-//    data class MyV2(
-//        val review: Review,
-//        val text: Int,
-//    ) : MovieDetailsReview()
-//
-//    data class SomeoneV2(
-//        val review: Review,
-//        val text: String,
-//    ) : MovieDetailsReview()
 
     sealed class Existing : MovieDetailsReview() {
 
         abstract val review: Review
-
-//        final override val id: Id
-//            get() = review.id
 
         data class My(
             override val review: Review,
