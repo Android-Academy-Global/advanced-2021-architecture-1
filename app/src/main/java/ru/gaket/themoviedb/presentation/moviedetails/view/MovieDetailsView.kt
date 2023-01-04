@@ -52,6 +52,7 @@ import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsReview
 import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsReview.Add
 import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsReview.Existing
 import ru.gaket.themoviedb.presentation.moviedetails.viewmodel.MovieDetailsViewModel
+import ru.gaket.themoviedb.presentation.review.common.RatingView
 
 @Preview
 @Composable
@@ -282,13 +283,16 @@ private fun ExistingReviewItem(
             verticalArrangement = SpaceBetween,
             modifier = Modifier.padding(all = dimensionResource(id = R.dimen.space_medium)),
         ) {
-            Text(
-                text = text,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 2,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-            )
+            Column(verticalArrangement = spacedBy(dimensionResource(id = R.dimen.space_normal))) {
+                Text(
+                    text = text,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 2,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+                RatingView(rating = review.rating.starsCount)
+            }
             Text(
                 text = review.liked,
                 overflow = TextOverflow.Ellipsis,
