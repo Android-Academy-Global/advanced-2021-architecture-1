@@ -7,11 +7,11 @@ import ru.gaket.themoviedb.domain.review.store.ItemStore
 
 class HeapItemStore<T : Any>(initialValue: T? = null) : ItemStore<T> {
 
-    private val itemState = MutableStateFlow<T?>(initialValue)
+    private val itemState = MutableStateFlow(initialValue)
 
     override var item: T?
         get() = itemState.value
-        set(newValue: T?) {
+        set(newValue) {
             itemState.value = newValue
         }
 

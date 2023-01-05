@@ -1,40 +1,31 @@
 package ru.gaket.themoviedb.presentation.moviedetails.model
 
 import ru.gaket.themoviedb.domain.review.models.Review
-import ru.gaket.themoviedb.domain.review.models.Review.Id
 import ru.gaket.themoviedb.domain.review.models.SomeoneReview
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 sealed class MovieDetailsReview {
 
-    abstract val id: Review.Id?
-
     data class Add(
-        val isAuthorized: Boolean,
-    ) : MovieDetailsReview() {
-
-        override val id: Review.Id? get() = null
-    }
+        val textRes: Int,
+    ) : MovieDetailsReview()
 
     sealed class Existing : MovieDetailsReview() {
 
         abstract val review: Review
 
-        final override val id: Review.Id
-            get() = review.id
-
         data class My(
             override val review: Review,
-        ) : MovieDetailsReview.Existing()
+            val textRes: Int,
+        ) : Existing()
 
         data class Someone(
             val info: SomeoneReview,
-        ) : MovieDetailsReview.Existing() {
+            val text: String,
+        ) : Existing() {
 
-            override val review: Review get() = this.info.review
+            override val review: Review get() = info.review
         }
     }
 }
