@@ -1,6 +1,6 @@
 package ru.gaket.themoviedb.core.navigation
 
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.Immutable
 import androidx.fragment.app.Fragment
 import ru.gaket.themoviedb.domain.movies.models.MovieId
 import ru.gaket.themoviedb.presentation.auth.view.ComposeAuthFragment
@@ -15,7 +15,7 @@ interface Screen {
     val tag: String? get() = null
 }
 
-@Stable
+@Immutable
 class MoviesScreen : Screen {
 
     override fun destination(): Fragment = ComposeMoviesFragment.newInstance()
@@ -36,7 +36,7 @@ data class MovieDetailsScreen(
     }
 }
 
-@Stable
+@Immutable
 class AuthScreen : Screen {
 
     override fun destination(): Fragment = ComposeAuthFragment.newInstance()
