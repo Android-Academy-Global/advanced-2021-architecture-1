@@ -10,7 +10,3 @@ interface ItemStore<T> {
 
     fun updateSafely(updateAction: (T) -> T)
 }
-
-fun <T> ItemStore<T>.reset() {
-    this.item = null
-}

@@ -10,9 +10,7 @@ import ru.gaket.themoviedb.R
 import ru.gaket.themoviedb.databinding.FragmentComposeBinding
 import ru.gaket.themoviedb.domain.review.repository.CreateReviewScopedRepository
 import ru.gaket.themoviedb.presentation.review.CreateReviewScopedRepositoryImpl
-import ru.gaket.themoviedb.presentation.review.ReviewFieldEvent
 import ru.gaket.themoviedb.util.createAbstractViewModelFactory
-import ru.gaket.themoviedb.util.showSnackbar
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -37,13 +35,5 @@ internal class ComposeWhatNotLikeFragment : Fragment(R.layout.fragment_compose) 
         binding.root.setContent {
             WhatNotLikeView(viewModel = viewModel)
         }
-
-        // TODO Move into the ReviewTextView
-        viewModel.events.observe(viewLifecycleOwner, ::handleState)
     }
-
-    private fun handleState(reviewErrorField: ReviewFieldEvent) =
-        when (reviewErrorField) {
-            ReviewFieldEvent.EMPTY_FIELD -> requireView().showSnackbar(R.string.review_error_should_not_be_empty)
-        }
 }

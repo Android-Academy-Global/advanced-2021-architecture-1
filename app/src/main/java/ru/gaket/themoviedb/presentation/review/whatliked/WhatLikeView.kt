@@ -2,9 +2,10 @@ package ru.gaket.themoviedb.presentation.review.whatliked
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.gaket.themoviedb.R
 import ru.gaket.themoviedb.presentation.review.common.ReviewTextView
 
@@ -13,27 +14,37 @@ import ru.gaket.themoviedb.presentation.review.common.ReviewTextView
 private fun WhatLikeViewPreview() {
     WhatLikeView(
         submittedReviewText = "Some review",
+        isReviewTextEmpty = false,
+        onTextChange = {},
         onSubmit = {}
     )
 }
 
+@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 internal fun WhatLikeView(viewModel: WhatLikeViewModel) {
-    val submittedReviewText by viewModel.initialValue.observeAsState("")
+    val submittedReviewState by viewModel.reviewTextState.collectAsStateWithLifecycle()
+
     WhatLikeView(
-        submittedReviewText = submittedReviewText,
-        onSubmit = viewModel::submitInfo,
+        submittedReviewText = submittedReviewState.submittedText,
+        isReviewTextEmpty = submittedReviewState.isEmptyText,
+        onTextChange = viewModel::onReviewTextChange,
+        onSubmit = viewModel::submitText,
     )
 }
 
 @Composable
 private fun WhatLikeView(
     submittedReviewText: String,
-    onSubmit: (reviewText: String) -> Unit,
+    isReviewTextEmpty: Boolean,
+    onTextChange: (String) -> Unit,
+    onSubmit: () -> Unit,
 ) {
     ReviewTextView(
         title = stringResource(id = R.string.review_what_did_you_like),
         submittedReviewText = submittedReviewText,
+        onTextChange = onTextChange,
+        isReviewTextEmpty = isReviewTextEmpty,
         onSubmit = onSubmit,
     )
 }
