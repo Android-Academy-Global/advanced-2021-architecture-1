@@ -24,9 +24,7 @@ import ru.gaket.themoviedb.domain.review.models.CreateReviewStep
 import ru.gaket.themoviedb.domain.review.repository.CreateReviewScopedRepository
 import ru.gaket.themoviedb.presentation.review.rating.RatingFragment
 import ru.gaket.themoviedb.presentation.review.whatliked.ComposeWhatLikeFragment
-import ru.gaket.themoviedb.presentation.review.whatliked.WhatLikeFragment
 import ru.gaket.themoviedb.presentation.review.whatnotliked.ComposeWhatNotLikeFragment
-import ru.gaket.themoviedb.presentation.review.whatnotliked.WhatNotLikeFragment
 import ru.gaket.themoviedb.util.createAbstractViewModelFactory
 import javax.inject.Inject
 
