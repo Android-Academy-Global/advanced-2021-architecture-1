@@ -5,10 +5,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement.Center
 import androidx.compose.foundation.layout.Arrangement.SpaceBetween
 import androidx.compose.foundation.layout.Arrangement.spacedBy
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,6 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -58,6 +61,7 @@ import ru.gaket.themoviedb.presentation.review.common.RatingView
 @Composable
 private fun MovieDetailsViewPreview() {
     MovieDetailsView(
+        showLoading = false,
         moviePosterUrl = "",
         movieTitle = "Spider-Man",
         movieYear = "1992",
@@ -81,6 +85,7 @@ internal fun MovieDetailsView(
     val state by viewModel.movieDetailsState.collectAsStateWithLifecycle()
 
     MovieDetailsView(
+        showLoading = state.isMovieDetailsLoading,
         moviePosterUrl = state.moviePosterUrl,
         movieTitle = state.movieTitle,
         movieYear = state.movieYear,
@@ -97,6 +102,7 @@ internal fun MovieDetailsView(
 
 @Composable
 private fun MovieDetailsView(
+    showLoading: Boolean,
     moviePosterUrl: String,
     movieTitle: String,
     movieYear: String,
@@ -112,37 +118,47 @@ private fun MovieDetailsView(
         verticalArrangement = spacedBy(dimensionResource(id = R.dimen.space_normal)),
         modifier = Modifier
             .background(colorResource(id = R.color.colorBackground))
-            .fillMaxWidth()
+            .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
         MovieDetailsTopAppBar(
             onBackClick = onBackClick,
             onWebSearchClick = onWebSearchClick,
         )
-        MovieDetails(
-            posterUrl = moviePosterUrl,
-            title = movieTitle,
-            year = movieYear,
-            genres = movieGenres,
-            rating = movieRating,
-        )
-        Text(
-            text = movieOverview,
-            fontSize = 20.sp,
-            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.space_normal)),
-        )
-        LazyRow(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.space_normal))) {
-            items(movieReviews) { review ->
-                when (review) {
-                    is Add -> AddReviewItem(item = review, onClick = onAddReviewClick)
-                    is Existing.My -> ExistingReviewItem(
-                        text = stringResource(id = review.textRes),
-                        review = review.review,
-                    )
-                    is Existing.Someone -> ExistingReviewItem(
-                        text = review.text,
-                        review = review.review,
-                    )
+        if (showLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+            ) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+        } else {
+            MovieDetails(
+                posterUrl = moviePosterUrl,
+                title = movieTitle,
+                year = movieYear,
+                genres = movieGenres,
+                rating = movieRating,
+            )
+            Text(
+                text = movieOverview,
+                fontSize = 20.sp,
+                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.space_normal)),
+            )
+            LazyRow(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.space_normal))) {
+                items(movieReviews) { review ->
+                    when (review) {
+                        is Add -> AddReviewItem(item = review, onClick = onAddReviewClick)
+                        is Existing.My -> ExistingReviewItem(
+                            text = stringResource(id = review.textRes),
+                            review = review.review,
+                        )
+                        is Existing.Someone -> ExistingReviewItem(
+                            text = review.text,
+                            review = review.review,
+                        )
+                    }
                 }
             }
         }
@@ -301,7 +317,7 @@ private fun ExistingReviewItem(
                 color = colorResource(id = R.color.colorReviewLiked),
             )
             Text(
-                text = review.liked,
+                text = review.disliked,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 4,
                 fontSize = 14.sp,
