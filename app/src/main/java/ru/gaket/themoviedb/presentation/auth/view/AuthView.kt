@@ -1,6 +1,7 @@
 package ru.gaket.themoviedb.presentation.auth.view
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,12 +11,12 @@ import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.ScaffoldState
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
@@ -106,80 +108,84 @@ private fun AuthView(
     loginError: Int?,
     isAuthBtnEnabled: Boolean,
     onAuthClick: () -> Unit,
-) {
-    ShowToastOnLoginErrorIfNeeded(loginError)
+    snackbarState: SnackbarHostState = remember { SnackbarHostState() },
 
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = dimensionResource(id = R.dimen.space_normal)),
     ) {
-        OutlinedTextField(
-            value = emailInput,
-            onValueChange = onEmailChange,
-            label = { Text(text = stringResource(id = R.string.email)) },
-            isError = isEmailErrorVisible,
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            modifier = Modifier.fillMaxWidth(),
-        )
-        if (isEmailErrorVisible) {
-            Text(
-                text = emailError,
-                color = Color.Red,
-                fontSize = 12.sp,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
 
-        var passwordVisible by remember { mutableStateOf(false) }
-        OutlinedTextField(
-            value = passwordInput,
-            onValueChange = onPasswordChange,
-            label = { Text(text = stringResource(id = R.string.password)) },
-            isError = isPasswordErrorVisible,
-            singleLine = true,
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            trailingIcon = {
-                PasswordVisibilityToggleButton(isVisible = passwordVisible) {
-                    passwordVisible = !passwordVisible
-                }
-            },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            modifier = Modifier.fillMaxWidth(),
-        )
-        if (isPasswordErrorVisible) {
-            Text(
-                text = passwordError,
-                color = Color.Red,
-                fontSize = 12.sp,
-                modifier = Modifier.fillMaxWidth(),
+    if (loginError != null) {
+        val message = stringResource(loginError)
+
+        LaunchedEffect(snackbarState) {
+            snackbarState.showSnackbar(
+                message = message,
             )
-        }
-        Button(
-            onClick = onAuthClick,
-            modifier = Modifier.fillMaxWidth(),
-            enabled = isAuthBtnEnabled,
-        ) {
-            Text(text = stringResource(id = R.string.auth))
         }
     }
-}
 
-@Composable
-private fun ShowToastOnLoginErrorIfNeeded(
-    loginError: Int?,
-    scaffoldState: ScaffoldState = rememberScaffoldState(),
-) {
-    if (loginError == null) return
+    Box {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = dimensionResource(id = R.dimen.space_normal)),
+        ) {
+            OutlinedTextField(
+                value = emailInput,
+                onValueChange = onEmailChange,
+                label = { Text(text = stringResource(id = R.string.email)) },
+                isError = isEmailErrorVisible,
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                modifier = Modifier.fillMaxWidth(),
+            )
+            if (isEmailErrorVisible) {
+                Text(
+                    text = emailError,
+                    color = Color.Red,
+                    fontSize = 12.sp,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
 
-    val errorMessage = stringResource(loginError)
+            var passwordVisible by remember { mutableStateOf(false) }
+            OutlinedTextField(
+                value = passwordInput,
+                onValueChange = onPasswordChange,
+                label = { Text(text = stringResource(id = R.string.password)) },
+                isError = isPasswordErrorVisible,
+                singleLine = true,
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    PasswordVisibilityToggleButton(isVisible = passwordVisible) {
+                        passwordVisible = !passwordVisible
+                    }
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                modifier = Modifier.fillMaxWidth(),
+            )
+            if (isPasswordErrorVisible) {
+                Text(
+                    text = passwordError,
+                    color = Color.Red,
+                    fontSize = 12.sp,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            Button(
+                onClick = onAuthClick,
+                modifier = Modifier.fillMaxWidth(),
+                enabled = isAuthBtnEnabled,
+            ) {
+                Text(text = stringResource(id = R.string.auth))
+            }
+        }
 
-    LaunchedEffect(scaffoldState.snackbarHostState) {
-        scaffoldState.snackbarHostState.showSnackbar(
-            message = errorMessage,
+        SnackbarHost(
+            hostState = snackbarState,
+            modifier = Modifier
+                .align(BottomCenter)
+                .padding(horizontal = dimensionResource(id = R.dimen.space_normal)),
         )
     }
 }
