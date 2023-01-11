@@ -1,2 +1,5 @@
-rootProject.name='The Movie Db'
+enableFeaturePreview("VERSION_CATALOGS")
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+rootProject.name='TheMovieDb'
 include ':app'

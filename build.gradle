@@ -1,11 +1,4 @@
 buildscript {
-    ext {
-        agp_version = '7.3.0'
-        hilt_version = '2.38.1'
-        kotlin_version = '1.7.20'
-        google_services_version = '4.3.10'
-        compose_compiler_version = '1.3.2'
-    }
 
     repositories {
         google()
@@ -13,10 +6,10 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:$agp_version"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
-        classpath "com.google.gms:google-services:$google_services_version"
+        classpath(libs.androidGradle)
+        classpath(libs.kotlinGradle)
+        classpath(libs.hiltGradle)
+        classpath(libs.googleServicesGradle)
     }
 }
 
@@ -24,7 +17,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        gradlePluginPortal()
     }
 }
 
