@@ -93,6 +93,7 @@ class AuthViewModel @Inject constructor(
                 emailError = null,
                 isEmailErrorVisible = false,
                 isAuthBtnEnabled = true,
+                logInError = null,
             )
         }
     }
@@ -104,6 +105,7 @@ class AuthViewModel @Inject constructor(
                 passwordError = null,
                 isPasswordErrorVisible = false,
                 isAuthBtnEnabled = true,
+                logInError = null,
             )
         }
     }
