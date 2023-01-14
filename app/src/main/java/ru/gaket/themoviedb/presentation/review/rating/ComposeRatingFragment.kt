@@ -11,8 +11,6 @@ import ru.gaket.themoviedb.databinding.FragmentComposeBinding
 import ru.gaket.themoviedb.domain.review.repository.CreateReviewScopedRepository
 import ru.gaket.themoviedb.presentation.review.CreateReviewScopedRepositoryImpl
 import ru.gaket.themoviedb.util.createAbstractViewModelFactory
-import ru.gaket.themoviedb.util.showSnackbar
-import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -37,23 +35,6 @@ internal class ComposeRatingFragment : Fragment(R.layout.fragment_compose) {
         super.onViewCreated(view, savedInstanceState)
         binding.root.setContent {
             ReviewRatingView(viewModel = viewModel)
-        }
-
-        // TODO Move into composition
-        viewModel.event.observe(viewLifecycleOwner, ::processReviewEvent)
-    }
-
-    private fun processReviewEvent(event: RatingViewModel.Event) {
-        Timber.d("Event received: $event")
-        when (event) {
-            RatingViewModel.Event.ERROR_UNKNOWN,
-            RatingViewModel.Event.ERROR_USER_NOT_SIGNED,
-            -> {
-                requireView().showSnackbar(R.string.review_error_unknown)
-            }
-            RatingViewModel.Event.ERROR_ZERO_RATING -> {
-                requireView().showSnackbar(R.string.review_error_zero_rating)
-            }
         }
     }
 }

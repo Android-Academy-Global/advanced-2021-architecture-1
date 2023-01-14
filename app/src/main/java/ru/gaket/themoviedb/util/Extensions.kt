@@ -1,13 +1,7 @@
 package ru.gaket.themoviedb.util
 
-import android.content.Context
-import android.content.res.Resources
-import android.view.View
-import android.view.inputmethod.InputMethodManager
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.isActive
@@ -38,32 +32,6 @@ suspend fun <T> FlowCollector<T>.emitIfActive(value: T) {
     if (currentCoroutineContext().isActive) {
         emit(value)
     }
-}
-
-val Int.toDp: Int
-    get() = (this / Resources.getSystem().displayMetrics.density).toInt()
-
-val Int.toPx: Int
-    get() = (this * Resources.getSystem().displayMetrics.density).toInt()
-
-fun View.showSnackbar(
-    @StringRes stringRes: Int,
-    duration: Int = Snackbar.LENGTH_SHORT,
-) {
-    Snackbar.make(this, stringRes, duration).show()
-}
-
-fun View.hideKeyboard() {
-    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.hideSoftInputFromWindow(windowToken, 0)
-}
-
-fun View.toGone() {
-    visibility = View.GONE
-}
-
-fun View.toVisible() {
-    visibility = View.VISIBLE
 }
 
 val <T> T.exhaustive: T

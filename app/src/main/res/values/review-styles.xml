@@ -1,19 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="ReviewTextInputLayout" />
-
-    <style name="ReviewEditText">
-        <item name="android:background">@drawable/bg_search</item>
-        <item name="android:paddingTop">@dimen/space_normal</item>
-        <item name="android:paddingStart">@dimen/space_big</item>
-        <item name="android:paddingEnd">@dimen/space_big</item>
-        <item name="android:paddingBottom">@dimen/space_huge</item>
-        <item name="android:gravity">top</item>
-    </style>
-
-    <style name="ReviewSubmitButton" />
-
     <style name="ReviewTitle">
         <item name="android:textSize">24sp</item>
         <item name="android:ellipsize">end</item>

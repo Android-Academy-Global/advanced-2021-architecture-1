@@ -109,8 +109,7 @@ private fun AuthView(
     isAuthBtnEnabled: Boolean,
     onAuthClick: () -> Unit,
     snackbarState: SnackbarHostState = remember { SnackbarHostState() },
-
-    ) {
+) {
 
     if (loginError != null) {
         val message = stringResource(loginError)
