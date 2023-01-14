@@ -34,7 +34,7 @@ internal fun RatingView(
                 },
                 contentDescription = null,
                 tint = MaterialTheme.colors.primary,
-                modifier = Modifier.clickable(onClick = { onRatingChange(it) }),
+                modifier = Modifier.clickable(onClick = { onRatingChange(it + 1) }),
             )
         }
     }

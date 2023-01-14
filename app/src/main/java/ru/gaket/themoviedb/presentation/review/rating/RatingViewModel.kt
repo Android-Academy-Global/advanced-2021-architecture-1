@@ -1,7 +1,6 @@
 package ru.gaket.themoviedb.presentation.review.rating
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -9,15 +8,15 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.gaket.themoviedb.data.auth.AuthRepository
 import ru.gaket.themoviedb.data.movies.MoviesRepository
 import ru.gaket.themoviedb.domain.auth.User
-import ru.gaket.themoviedb.domain.review.models.CreateReviewState
 import ru.gaket.themoviedb.domain.review.models.Rating
 import ru.gaket.themoviedb.domain.review.repository.CreateReviewScopedRepository
 import ru.gaket.themoviedb.util.Result
@@ -36,35 +35,46 @@ class RatingViewModel @AssistedInject constructor(
         get() = _reviewEvent
             .asLiveData(viewModelScope.coroutineContext)
 
-    private val _reviewState = MutableLiveData<State>()
-    val state: LiveData<State> get() = _reviewState
+    private val _reviewState = MutableStateFlow(State())
+    val state: StateFlow<State> get() = _reviewState.asStateFlow()
 
     init {
         viewModelScope.launch {
             createReviewScopedRepository.observeState()
-                .filterIsInstance<CreateReviewState>()
                 .map { state -> state.form.rating }
-                .filter { _reviewState.value == null }
-                .collect { rating -> _reviewState.value = State.Idle(rating) }
+                .collect { rating ->
+                    _reviewState.update { value ->
+                        value.copy(rating = rating)
+                    }
+                }
         }
     }
 
-    fun submit(ratingNumber: Int) {
+    fun onRatingChange(ratingNumber: Int) {
         viewModelScope.launch {
             val rating = Rating.mapToRating(ratingNumber)
-            if (rating == null) {
+            if (rating != null) {
+                createReviewScopedRepository.setRating(rating)
+            }
+        }
+    }
+
+    fun submit() {
+        viewModelScope.launch {
+            if (_reviewState.value.rating == null) {
                 _reviewEvent.emit(Event.ERROR_ZERO_RATING)
             } else {
-                createReviewScopedRepository.setRating(rating)
                 submitReview()
             }
         }
     }
 
     private suspend fun submitReview() {
-        val originalState = _reviewState.value!!
-        if (originalState is State.Idle) {
-            _reviewState.value = State.Loading
+        val originalState = _reviewState.value
+        if (!originalState.showProgress) {
+            _reviewState.update { value ->
+                value.copy(showProgress = true)
+            }
 
             val currentUser = authRepository.currentUser
             if (currentUser == null) {
@@ -74,7 +84,10 @@ class RatingViewModel @AssistedInject constructor(
                 is Result.Error -> _reviewEvent.emit(Event.ERROR_UNKNOWN)
             }.exhaustive
 
-            _reviewState.value = originalState
+
+            _reviewState.update { value ->
+                value.copy(showProgress = false)
+            }
         }
     }
 
@@ -89,10 +102,10 @@ class RatingViewModel @AssistedInject constructor(
             }
             .doOnSuccess { createReviewScopedRepository.markAsFinished() }
 
-    sealed class State {
-        data class Idle(val rating: Rating?) : State()
-        object Loading : State()
-    }
+    data class State(
+        val rating: Rating? = null,
+        val showProgress: Boolean = false,
+    )
 
     enum class Event {
         ERROR_ZERO_RATING,
