@@ -35,15 +35,17 @@ class RatingViewModel @AssistedInject constructor(
         get() = _reviewEvent
             .asLiveData(viewModelScope.coroutineContext)
 
-    private val _reviewState = MutableStateFlow(State(rating = null, showProgress = false))
+    private val _reviewState = MutableStateFlow(State())
     val state: StateFlow<State> get() = _reviewState.asStateFlow()
 
     init {
         viewModelScope.launch {
             createReviewScopedRepository.observeState()
-                .map { it.form.rating }
+                .map { state -> state.form.rating }
                 .collect { rating ->
-                    _reviewState.update { it.copy(rating = rating) }
+                    _reviewState.update { value ->
+                        value.copy(rating = rating)
+                    }
                 }
         }
     }
@@ -70,8 +72,8 @@ class RatingViewModel @AssistedInject constructor(
     private suspend fun submitReview() {
         val originalState = _reviewState.value
         if (!originalState.showProgress) {
-            _reviewState.update {
-                it.copy(showProgress = true)
+            _reviewState.update { value ->
+                value.copy(showProgress = true)
             }
 
             val currentUser = authRepository.currentUser
@@ -83,8 +85,8 @@ class RatingViewModel @AssistedInject constructor(
             }.exhaustive
 
 
-            _reviewState.update {
-                it.copy(showProgress = false)
+            _reviewState.update { value ->
+                value.copy(showProgress = false)
             }
         }
     }
@@ -101,8 +103,8 @@ class RatingViewModel @AssistedInject constructor(
             .doOnSuccess { createReviewScopedRepository.markAsFinished() }
 
     data class State(
-        val rating: Rating?,
-        val showProgress: Boolean,
+        val rating: Rating? = null,
+        val showProgress: Boolean = false,
     )
 
     enum class Event {
