@@ -5,43 +5,4 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-
-    <style name="movie_name">
-        <item name="android:background">@drawable/bg_linear</item>
-        <item name="android:gravity">center</item>
-        <item name="android:paddingLeft">@dimen/space_small</item>
-        <item name="android:paddingRight">@dimen/space_small</item>
-        <item name="android:paddingTop">30dp</item>
-        <item name="android:paddingBottom">8dp</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/colorTitles</item>
-        <item name="android:textSize">15sp</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="SearchStyle">
-        <item name="android:background">@drawable/bg_search</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:paddingStart">@dimen/space_big</item>
-        <item name="android:paddingEnd">@dimen/space_huge</item>
-        <item name="android:textColorHint">@color/textColorSecondary</item>
-        <item name="android:hint">@string/hint_search_query</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@android:color/black</item>
-    </style>
-
-    <style name="ItemReview.Card" parent="">
-        <item name="android:layout_width">200dp</item>
-        <item name="android:layout_height">300dp</item>
-        <item name="android:layout_marginStart">@dimen/space_small</item>
-        <item name="android:layout_marginEnd">@dimen/space_small</item>
-        <item name="android:layout_marginTop">@dimen/space_medium</item>
-        <item name="android:layout_marginBottom">@dimen/space_medium</item>
-        <item name="android:foreground">?selectableItemBackground</item>
-        <item name="cardBackgroundColor">@color/colorReviewBackground</item>
-        <item name="cardCornerRadius">@dimen/cornerRad</item>
-        <item name="cardElevation">@dimen/reviewElevation</item>
-        <item name="cardUseCompatPadding">true</item>
-        <item name="contentPadding">@dimen/space_medium</item>
-    </style>
 </resources>
