@@ -55,10 +55,10 @@ class RatingViewModel @AssistedInject constructor(
 
     fun submit() {
         viewModelScope.launch {
-            if (_reviewState.value.rating == null) {
-                _reviewState.update { value ->
-                    value.copy(error = R.string.review_error_zero_rating)
-                }
+            updateError(null)
+
+            if (_reviewState.value.rating == 0) {
+                updateError(R.string.review_error_zero_rating)
             } else {
                 submitReview()
             }
@@ -74,19 +74,21 @@ class RatingViewModel @AssistedInject constructor(
 
             val currentUser = authRepository.currentUser
             if (currentUser == null) {
-                _reviewState.update { value ->
-                    value.copy(error = R.string.review_error_unknown)
-                }
+                updateError(R.string.review_error_unknown)
             } else when (submitReview(currentUser)) {
                 is Result.Success -> Unit
-                is Result.Error -> _reviewState.update { value ->
-                    value.copy(error = R.string.review_error_unknown)
-                }
+                is Result.Error -> updateError(R.string.review_error_unknown)
             }.exhaustive
 
             _reviewState.update { value ->
                 value.copy(showProgress = false)
             }
+        }
+    }
+
+    private fun updateError(@StringRes error: Int?) {
+        _reviewState.update { value ->
+            value.copy(error = error)
         }
     }
 
