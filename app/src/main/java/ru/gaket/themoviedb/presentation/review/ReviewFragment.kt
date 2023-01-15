@@ -6,20 +6,18 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.IdRes
 import androidx.core.os.bundleOf
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import ru.gaket.themoviedb.R
 import ru.gaket.themoviedb.core.navigation.MovieDetailsScreen
 import ru.gaket.themoviedb.core.navigation.Navigator
 import ru.gaket.themoviedb.databinding.FragmentReviewBinding
-import ru.gaket.themoviedb.domain.movies.models.Movie
 import ru.gaket.themoviedb.domain.movies.models.MovieId
-import ru.gaket.themoviedb.domain.review.models.CreateReviewForm
 import ru.gaket.themoviedb.domain.review.models.CreateReviewStep
 import ru.gaket.themoviedb.domain.review.repository.CreateReviewScopedRepository
 import ru.gaket.themoviedb.presentation.review.rating.ComposeRatingFragment
@@ -65,20 +63,19 @@ class ReviewFragment : Fragment(R.layout.fragment_review) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.cvReviewSummary.setContent {
+            ReviewView(viewModel = viewModel)
+        }
 
-        viewModel.state.observe(viewLifecycleOwner, ::handleState)
+        // TODO Move into ReviewView while refactoring navigation
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.state.collect(::handleState)
+        }
     }
 
-    private fun handleState(state: ReviewViewModel.State) =
-        when (state) {
-            is ReviewViewModel.State.Data -> {
-                handleStep(state.createState.step)
-                binding.bind(state.movie, state.createState.form)
-            }
-            ReviewViewModel.State.NoMovie -> {
-                binding.cvReviewSummary.isVisible = false
-            }
-        }
+    private fun handleState(state: ReviewViewModel.State) {
+        state.createState?.step?.let(::handleStep)
+    }
 
     private fun handleStep(step: CreateReviewStep) {
         @IdRes val containerId = binding.containerReview.id
@@ -111,26 +108,5 @@ class ReviewFragment : Fragment(R.layout.fragment_review) {
             ReviewFragment().apply {
                 arguments = bundleOf(ARG_MOVIE_ID to movieId)
             }
-    }
-}
-
-private fun FragmentReviewBinding.bind(movie: Movie, createReview: CreateReviewForm) {
-    with(containerReviewSummary) {
-        Picasso.get()
-            .load(movie.thumbnail)
-            .placeholder(R.drawable.ph_movie_grey_200)
-            .error(R.drawable.ph_movie_grey_200)
-            .fit()
-            .centerCrop()
-            .into(ivMovieThumbnail)
-
-        tvRateMovieMessage.text = tvRateMovieMessage.context.getString(R.string.review_rate_placeholder, movie.title)
-
-        tvWhatLike.isVisible = (createReview.whatLiked != null)
-        tvWhatNotLike.isVisible = (createReview.whatDidNotLike != null)
-
-        tvWhatLike.text = tvWhatLike.context.getString(R.string.review_liked_placeholder, createReview.whatLiked)
-        tvWhatNotLike.text =
-            tvWhatNotLike.context.getString(R.string.review_not_liked_placeholder, createReview.whatDidNotLike)
     }
 }

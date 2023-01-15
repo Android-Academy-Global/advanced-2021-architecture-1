@@ -8,5 +8,6 @@
     <dimen name="cornerRad">6dp</dimen>
     <dimen name="itemsDist">19dp</dimen>
     <dimen name="posterHeight">150dp</dimen>
+    <dimen name="posterWidth">100dp</dimen>
     <dimen name="reviewElevation">4dp</dimen>
 </resources>
