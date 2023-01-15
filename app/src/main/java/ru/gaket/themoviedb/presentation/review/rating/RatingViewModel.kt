@@ -1,19 +1,18 @@
 package ru.gaket.themoviedb.presentation.review.rating
 
-import androidx.lifecycle.LiveData
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ru.gaket.themoviedb.R
 import ru.gaket.themoviedb.data.auth.AuthRepository
 import ru.gaket.themoviedb.data.movies.MoviesRepository
 import ru.gaket.themoviedb.domain.auth.User
@@ -30,18 +29,13 @@ class RatingViewModel @AssistedInject constructor(
     private val moviesRepository: MoviesRepository,
 ) : ViewModel() {
 
-    private val _reviewEvent = MutableSharedFlow<Event>()
-    val event: LiveData<Event>
-        get() = _reviewEvent
-            .asLiveData(viewModelScope.coroutineContext)
-
     private val _reviewState = MutableStateFlow(State())
     val state: StateFlow<State> get() = _reviewState.asStateFlow()
 
     init {
         viewModelScope.launch {
             createReviewScopedRepository.observeState()
-                .map { state -> state.form.rating }
+                .map { state -> state.form.rating?.starsCount ?: 0 }
                 .collect { rating ->
                     _reviewState.update { value ->
                         value.copy(rating = rating)
@@ -61,8 +55,10 @@ class RatingViewModel @AssistedInject constructor(
 
     fun submit() {
         viewModelScope.launch {
-            if (_reviewState.value.rating == null) {
-                _reviewEvent.emit(Event.ERROR_ZERO_RATING)
+            updateError(null)
+
+            if (_reviewState.value.rating == 0) {
+                updateError(R.string.review_error_zero_rating)
             } else {
                 submitReview()
             }
@@ -78,16 +74,21 @@ class RatingViewModel @AssistedInject constructor(
 
             val currentUser = authRepository.currentUser
             if (currentUser == null) {
-                _reviewEvent.emit(Event.ERROR_USER_NOT_SIGNED)
+                updateError(R.string.review_error_unknown)
             } else when (submitReview(currentUser)) {
                 is Result.Success -> Unit
-                is Result.Error -> _reviewEvent.emit(Event.ERROR_UNKNOWN)
+                is Result.Error -> updateError(R.string.review_error_unknown)
             }.exhaustive
-
 
             _reviewState.update { value ->
                 value.copy(showProgress = false)
             }
+        }
+    }
+
+    private fun updateError(@StringRes error: Int?) {
+        _reviewState.update { value ->
+            value.copy(error = error)
         }
     }
 
@@ -103,15 +104,10 @@ class RatingViewModel @AssistedInject constructor(
             .doOnSuccess { createReviewScopedRepository.markAsFinished() }
 
     data class State(
-        val rating: Rating? = null,
+        val rating: Int = 0,
         val showProgress: Boolean = false,
+        @StringRes val error: Int? = null,
     )
-
-    enum class Event {
-        ERROR_ZERO_RATING,
-        ERROR_UNKNOWN,
-        ERROR_USER_NOT_SIGNED
-    }
 
     @AssistedFactory
     interface Factory {
