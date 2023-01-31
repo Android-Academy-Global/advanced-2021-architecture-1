@@ -49,7 +49,7 @@ internal fun ReviewView(viewModel: ReviewViewModel) {
                 null
             },
             whatNotLiked = if (createReviewForm?.whatDidNotLike != null) {
-                stringResource(id = R.string.review_liked_placeholder, createReviewForm.whatDidNotLike)
+                stringResource(id = R.string.review_not_liked_placeholder, createReviewForm.whatDidNotLike)
             } else {
                 null
             },
