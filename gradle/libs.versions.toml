@@ -16,6 +16,7 @@ gson = "2.8.7"
 kotlinCoroutines = "1.6.4"
 retrofit = "2.9.0"
 room = "2.4.3"
+navigation = "2.4.2"
 
 [libraries]
 kotlinGradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -60,3 +61,6 @@ okhttp-loggingInterceptor = "com.squareup.okhttp3:logging-interceptor:4.9.1"
 
 picasso = "com.squareup.picasso:picasso:2.71828" # todo remove after full migration to Compose
 viewbindingpropertydelegate = "com.github.kirich1409:viewbindingpropertydelegate-noreflection:1.5.0-beta01" # todo remove after full migration to Compose
+
+navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
+navigation-hilt = "androidx.hilt:hilt-navigation-compose:1.0.0"

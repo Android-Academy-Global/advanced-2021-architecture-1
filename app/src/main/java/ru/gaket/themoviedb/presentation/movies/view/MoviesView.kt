@@ -66,7 +66,8 @@ private fun MoviesViewPreview() {
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
-internal fun MoviesView(viewModel: MoviesViewModel, navigator: Navigator) {
+internal fun MoviesView(viewModel: MoviesViewModel,
+                        onMovieClick: (movie: SearchMovie) -> Unit) {
     val state by viewModel.searchResult.collectAsStateWithLifecycle()
 
     MoviesView(
@@ -75,9 +76,7 @@ internal fun MoviesView(viewModel: MoviesViewModel, navigator: Navigator) {
         isSearchInProgress = state.isMoviesLoading,
         searchResultPlaceholder = state.resultPlaceholder,
         onNewQuery = viewModel::onNewQuery,
-        onMovieClick = { movie ->
-            navigator.navigateTo(MovieDetailsScreen(movie.id, movie.title))
-        }
+        onMovieClick = onMovieClick
     )
 }
 

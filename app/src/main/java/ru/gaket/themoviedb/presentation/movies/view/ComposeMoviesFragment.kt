@@ -7,6 +7,7 @@ import androidx.fragment.app.viewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 import ru.gaket.themoviedb.R
+import ru.gaket.themoviedb.core.navigation.MovieDetailsScreen
 import ru.gaket.themoviedb.core.navigation.Navigator
 import ru.gaket.themoviedb.databinding.FragmentComposeBinding
 import ru.gaket.themoviedb.presentation.movies.viewmodel.MoviesViewModel
@@ -25,7 +26,12 @@ internal class ComposeMoviesFragment : Fragment(R.layout.fragment_compose) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.root.setContent {
-            MoviesView(viewModel = viewModel, navigator = navigator)
+            MoviesView(
+                viewModel = viewModel,
+                onMovieClick = { movie ->
+                    navigator.navigateTo(MovieDetailsScreen(movie.id, movie.title))
+                }
+            )
         }
     }
 
