@@ -41,12 +41,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import ru.gaket.themoviedb.R
-import ru.gaket.themoviedb.core.navigation.MovieDetailsScreen
-import ru.gaket.themoviedb.core.navigation.Navigator
 import ru.gaket.themoviedb.domain.movies.models.SearchMovie
 import ru.gaket.themoviedb.domain.movies.models.SearchMovieWithMyReview
 import ru.gaket.themoviedb.presentation.movies.viewmodel.MoviesViewModel
@@ -66,8 +65,10 @@ private fun MoviesViewPreview() {
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
-internal fun MoviesView(viewModel: MoviesViewModel,
-                        onMovieClick: (movie: SearchMovie) -> Unit) {
+internal fun MoviesView(
+    viewModel: MoviesViewModel = hiltViewModel(),
+    onMovieClick: (movie: SearchMovie) -> Unit
+) {
     val state by viewModel.searchResult.collectAsStateWithLifecycle()
 
     MoviesView(

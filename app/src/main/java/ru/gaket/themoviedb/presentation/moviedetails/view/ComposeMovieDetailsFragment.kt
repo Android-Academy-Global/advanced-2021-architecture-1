@@ -43,8 +43,13 @@ internal class ComposeMovieDetailsFragment : Fragment(R.layout.fragment_compose)
         binding.root.setContent {
             MovieDetailsView(
                 viewModel = viewModel,
-                navigator = navigator,
-                webNavigator = webNavigator,
+                onNavigateIntent = { screenToNavigate ->
+                    navigator.navigateTo(screenToNavigate)
+                },
+                onBackClick = navigator::back,
+                onWebSearchClick = {
+                    webNavigator.navigateTo(viewModel.movieId)
+                }
             )
         }
     }
@@ -54,12 +59,13 @@ internal class ComposeMovieDetailsFragment : Fragment(R.layout.fragment_compose)
         private const val ARG_MOVIE_ID = "ARG_MOVIE_ID"
         private const val ARG_MOVIE_TITLE = "ARG_MOVIE_TITLE"
 
-        fun newInstance(movieId: Long, title: String): ComposeMovieDetailsFragment = ComposeMovieDetailsFragment()
-            .apply {
-                arguments = bundleOf(
-                    ARG_MOVIE_ID to movieId,
-                    ARG_MOVIE_TITLE to title,
-                )
-            }
+        fun newInstance(movieId: Long, title: String): ComposeMovieDetailsFragment =
+            ComposeMovieDetailsFragment()
+                .apply {
+                    arguments = bundleOf(
+                        ARG_MOVIE_ID to movieId,
+                        ARG_MOVIE_TITLE to title,
+                    )
+                }
     }
 }

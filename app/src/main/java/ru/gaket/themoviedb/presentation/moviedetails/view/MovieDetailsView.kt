@@ -44,12 +44,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import ru.gaket.themoviedb.R
-import ru.gaket.themoviedb.core.navigation.Navigator
-import ru.gaket.themoviedb.core.navigation.WebNavigator
+import ru.gaket.themoviedb.core.navigation.Screen
 import ru.gaket.themoviedb.domain.review.models.Review
 import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsReview
 import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsReview.Add
@@ -78,9 +78,10 @@ private fun MovieDetailsViewPreview() {
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 internal fun MovieDetailsView(
-    viewModel: MovieDetailsViewModel,
-    navigator: Navigator,
-    webNavigator: WebNavigator,
+    viewModel: MovieDetailsViewModel = hiltViewModel(),
+    onNavigateIntent: (Screen) -> Unit,
+    onBackClick: () -> Unit,
+    onWebSearchClick: () -> Unit
 ) {
     val state by viewModel.movieDetailsState.collectAsStateWithLifecycle()
 
@@ -93,11 +94,12 @@ internal fun MovieDetailsView(
         movieRating = state.movieRating,
         movieOverview = state.movieOverview,
         movieReviews = state.movieReviews,
-        onAddReviewClick = { navigator.navigateTo(state.screenToNavigate) },
-        onBackClick = navigator::back,
-        onWebSearchClick = {
-            webNavigator.navigateTo(viewModel.movieId)
-        })
+        onAddReviewClick = {
+            onNavigateIntent(state.screenToNavigate)
+        },
+        onBackClick = onBackClick,
+        onWebSearchClick = onWebSearchClick
+    )
 }
 
 @Composable
@@ -209,8 +211,10 @@ private fun MovieDetails(
             modifier = Modifier
                 .height(dimensionResource(id = R.dimen.posterHeight))
                 .aspectRatio(ratio = 2f / 3f)
-                .background(color = colorResource(id = R.color.posterBackground),
-                    shape = RoundedCornerShape(dimensionResource(id = R.dimen.cornerRad))),
+                .background(
+                    color = colorResource(id = R.color.posterBackground),
+                    shape = RoundedCornerShape(dimensionResource(id = R.dimen.cornerRad))
+                ),
         )
         Column(
             verticalArrangement = spacedBy(dimensionResource(id = R.dimen.space_small)),

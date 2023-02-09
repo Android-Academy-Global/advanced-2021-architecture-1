@@ -64,7 +64,7 @@ private fun AuthViewPreview() {
 @Composable
 internal fun AuthView(
     viewModel: AuthViewModel,
-    navigator: Navigator,
+    onAuthorized: () -> Unit
 ) {
 
     val authState by viewModel.authState.collectAsStateWithLifecycle()
@@ -73,7 +73,7 @@ internal fun AuthView(
         snapshotFlow { authState }
             .filter { state -> state.isAuthorized }
             .collect {
-                navigator.back()
+                onAuthorized()
             }
     }
 

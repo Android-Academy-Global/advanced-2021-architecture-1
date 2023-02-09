@@ -25,7 +25,10 @@ internal class ComposeAuthFragment : Fragment(R.layout.fragment_compose) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.root.setContent {
-            AuthView(viewModel = viewModel, navigator = navigator)
+            AuthView(
+                viewModel = viewModel,
+                onAuthorized = { navigator.back() }
+            )
         }
     }
 
