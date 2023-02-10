@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,29 +28,37 @@ import ru.gaket.themoviedb.domain.review.models.MyReview
 import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsReview
 import ru.gaket.themoviedb.presentation.moviedetails.model.getCalendarYear
 import ru.gaket.themoviedb.util.Result
+import javax.inject.Inject
 
-class MovieDetailsViewModel @AssistedInject constructor(
+@HiltViewModel
+class MovieDetailsViewModel @Inject constructor(
     private val moviesRepository: MoviesRepository,
     private val authInteractor: AuthInteractor,
-    @Assisted val movieId: MovieId,
-    @Assisted private val title: String,
 ) : ViewModel() {
 
-    @AssistedFactory
-    interface Factory {
+    var movieId: MovieId? = null
 
-        fun create(movieId: MovieId, title: String): MovieDetailsViewModel
-    }
-
-    private val _movieDetailsState = MutableStateFlow(MovieDetailsState(
-        screenToNavigate = getScreenToNavigateOnReviewClick(),
-        loadingTitle = title,
-        isMovieDetailsLoading = true,
-    ))
+    private val _movieDetailsState = MutableStateFlow(
+        MovieDetailsState(
+            screenToNavigate = getScreenToNavigateOnReviewClick(),
+            loadingTitle = "",
+            isMovieDetailsLoading = true,
+        )
+    )
     val movieDetailsState: StateFlow<MovieDetailsState> = _movieDetailsState.asStateFlow()
 
-    init {
+    fun onStart(movieId: MovieId, title: String) {
+        this.movieId = movieId
         viewModelScope.launch {
+            _movieDetailsState.emit(
+                MovieDetailsState(
+                    screenToNavigate = getScreenToNavigateOnReviewClick(),
+                    loadingTitle = title,
+                    isMovieDetailsLoading = true,
+                )
+            )
+
+
             authInteractor
                 .observeIsAuthorized()
                 .flatMapLatest { isAuthorized ->
@@ -142,11 +151,13 @@ class MovieDetailsViewModel @AssistedInject constructor(
         }
     }
 
-    private fun getScreenToNavigateOnReviewClick(): Screen {
-        return if (authInteractor.isAuthorized()) {
-            ReviewScreen(movieId)
-        } else {
-            AuthScreen()
+    private fun getScreenToNavigateOnReviewClick(): Screen? {
+        return movieId?.let {
+            if (authInteractor.isAuthorized()) {
+                ReviewScreen(it)
+            } else {
+                AuthScreen()
+            }
         }
     }
 }

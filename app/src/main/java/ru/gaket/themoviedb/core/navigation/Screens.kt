@@ -17,6 +17,7 @@ interface Screen {
 
     val tag: String? get() = null
 
+    /* Route to screen's composable destination */
     val route: String
 }
 
@@ -25,7 +26,11 @@ class MoviesScreen : Screen {
 
     override fun destination(): Fragment = ComposeMoviesFragment.newInstance()
 
-    override val route: String = "main"
+    override val route: String = registrationRoute
+
+    companion object {
+        const val registrationRoute: String = "main"
+    }
 }
 
 data class MovieDetailsScreen(
@@ -36,14 +41,14 @@ data class MovieDetailsScreen(
 
     override val tag: String get() = TAG
 
-    override val route: String = "details/$movieId/$title"
+    override val route: String = "details/$movieId/${title.replace(" ", "-")}"
 
     companion object {
 
-        val movieIdKey = "movieIdKey"
-        val titleKey = "title"
+        const val movieIdKey = "movieId"
+        const val titleKey = "title"
 
-        val registrationRoute: String = "details/{$movieIdKey}/{$titleKey}"
+        const val registrationRoute: String = "details/{$movieIdKey}/{$titleKey}"
 
         const val TAG = "MovieDetailsScreen"
     }
@@ -53,7 +58,11 @@ data class MovieDetailsScreen(
 class AuthScreen : Screen {
 
     override fun destination(): Fragment = ComposeAuthFragment.newInstance()
-    override val route: String = "auth"
+    override val route: String = registrationRoute
+
+    companion object {
+        const val registrationRoute: String = "auth"
+    }
 }
 
 data class ReviewScreen(

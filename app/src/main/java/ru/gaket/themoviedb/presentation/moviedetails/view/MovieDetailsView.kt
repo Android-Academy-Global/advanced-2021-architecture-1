@@ -29,6 +29,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +51,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import ru.gaket.themoviedb.R
 import ru.gaket.themoviedb.core.navigation.Screen
+import ru.gaket.themoviedb.domain.movies.models.MovieId
 import ru.gaket.themoviedb.domain.review.models.Review
 import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsReview
 import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsReview.Add
@@ -78,6 +80,8 @@ private fun MovieDetailsViewPreview() {
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 internal fun MovieDetailsView(
+    movieId: MovieId,
+    loadingTitle: String,
     viewModel: MovieDetailsViewModel = hiltViewModel(),
     onNavigateIntent: (Screen) -> Unit,
     onBackClick: () -> Unit,
@@ -95,11 +99,20 @@ internal fun MovieDetailsView(
         movieOverview = state.movieOverview,
         movieReviews = state.movieReviews,
         onAddReviewClick = {
-            onNavigateIntent(state.screenToNavigate)
+            state.screenToNavigate?.let {
+                onNavigateIntent(it)
+            }
         },
         onBackClick = onBackClick,
         onWebSearchClick = onWebSearchClick
     )
+
+    LaunchedEffect(true) {
+        viewModel.onStart(
+            movieId = movieId,
+            title = loadingTitle
+        )
+    }
 }
 
 @Composable
@@ -156,6 +169,7 @@ private fun MovieDetailsView(
                             text = stringResource(id = review.textRes),
                             review = review.review,
                         )
+
                         is Existing.Someone -> ExistingReviewItem(
                             text = review.text,
                             review = review.review,
@@ -185,8 +199,10 @@ private fun MovieDetailsTopAppBar(
         }
         Spacer(modifier = Modifier.weight(weight = 1f))
         IconButton(onClick = onWebSearchClick) {
-            Icon(painter = painterResource(id = R.drawable.ic_search_web),
-                contentDescription = stringResource(id = R.string.review_button_search_web))
+            Icon(
+                painter = painterResource(id = R.drawable.ic_search_web),
+                contentDescription = stringResource(id = R.string.review_button_search_web)
+            )
         }
     }
 }
@@ -199,9 +215,11 @@ private fun MovieDetails(
     genres: String,
     rating: Int,
 ) {
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = dimensionResource(id = R.dimen.space_normal))) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = dimensionResource(id = R.dimen.space_normal))
+    ) {
         AsyncImage(
             model = posterUrl,
             contentDescription = stringResource(id = R.string.content_cinema_poster),

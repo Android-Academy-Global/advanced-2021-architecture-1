@@ -5,12 +5,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import ru.gaket.themoviedb.presentation.auth.view.AuthView
 import ru.gaket.themoviedb.presentation.moviedetails.view.ComposeMovieDetailsFragment
 import ru.gaket.themoviedb.presentation.moviedetails.view.MovieDetailsView
 import ru.gaket.themoviedb.presentation.moviedetails.viewmodel.MovieDetailsViewModel
 import ru.gaket.themoviedb.presentation.movies.view.MoviesView
+import java.lang.IllegalStateException
 
 @Composable
 fun AppNavGraph(
@@ -18,43 +22,47 @@ fun AppNavGraph(
     navController: NavHostController,
     webNavigator: WebNavigator
 ) {
-    val mainScreen = MoviesScreen()
-
     NavHost(
         navController = navController,
-        startDestination = mainScreen.route,
+        startDestination = MoviesScreen.registrationRoute,
         modifier = modifier
     ) {
-        composable(mainScreen.route) {
-            MoviesView(onMovieClick = {
-                navController.navigate(
-                    MovieDetailsScreen(it.id, it.title).route
-                )
-            }
+        composable(MoviesScreen.registrationRoute) {
+            MoviesView(
+                onMovieClick = {
+                    navController.navigate(
+                        MovieDetailsScreen(movieId = it.id, title = it.title).route
+                    )
+                }
             )
         }
 
-        composable(MovieDetailsScreen.registrationRoute) { backStack ->
-            val movieId = backStack.arguments?.getString(MovieDetailsScreen.movieIdKey)
-            val title = backStack.arguments?.getString(MovieDetailsScreen.titleKey)
+        composable(AuthScreen.registrationRoute) {
+            AuthView(
+                onAuthorized = navController::popBackStack
+            )
+        }
 
-            /**
-             * Так не работает, тк в [MovieDetailsViewModel] @AssistedInject.
-             * а подсунуть свою Factory по аналогии с [ComposeMovieDetailsFragment] не получится, тк
-             * hiltViewModel под капотом использует свою internal factory.
-             *
-             * Механизмов для инъекции @Assisted параметров не нашел
-             */
-            val viewModel = hiltViewModel<MovieDetailsViewModel>()
+        composable(
+            MovieDetailsScreen.registrationRoute,
+            arguments = listOf(
+                navArgument(MovieDetailsScreen.movieIdKey) { type = NavType.LongType },
+                navArgument(MovieDetailsScreen.titleKey) { type = NavType.StringType }
+            )
+        ) { backStack ->
+            val movieId = backStack.arguments?.getLong(MovieDetailsScreen.movieIdKey)
+                ?: throw IllegalStateException()
+            val title = backStack.arguments?.getString(MovieDetailsScreen.titleKey).orEmpty()
 
             MovieDetailsView(
-                viewModel = viewModel,
+                movieId = movieId,
+                loadingTitle = title,
                 onNavigateIntent = { screenToNavigate ->
                     navController.navigate(screenToNavigate.route)
                 },
                 onBackClick = navController::popBackStack,
                 onWebSearchClick = {
-                    webNavigator.navigateTo(1L) //viewModel.movieId)
+                    webNavigator.navigateTo(movieId)
                 }
             )
         }

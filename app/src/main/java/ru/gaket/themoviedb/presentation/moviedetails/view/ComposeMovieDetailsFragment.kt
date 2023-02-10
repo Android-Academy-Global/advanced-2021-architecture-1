@@ -12,7 +12,6 @@ import ru.gaket.themoviedb.core.navigation.Navigator
 import ru.gaket.themoviedb.core.navigation.WebNavigator
 import ru.gaket.themoviedb.databinding.FragmentComposeBinding
 import ru.gaket.themoviedb.presentation.moviedetails.viewmodel.MovieDetailsViewModel
-import ru.gaket.themoviedb.util.createAbstractViewModelFactory
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -24,17 +23,7 @@ internal class ComposeMovieDetailsFragment : Fragment(R.layout.fragment_compose)
     @Inject
     lateinit var webNavigator: WebNavigator
 
-    @Inject
-    lateinit var viewModelAssistedFactory: MovieDetailsViewModel.Factory
-
-    private val viewModel: MovieDetailsViewModel by viewModels {
-        createAbstractViewModelFactory {
-            viewModelAssistedFactory.create(
-                movieId = requireArguments().getLong(ARG_MOVIE_ID),
-                title = requireArguments().getString(ARG_MOVIE_TITLE).orEmpty()
-            )
-        }
-    }
+    private val viewModel: MovieDetailsViewModel by viewModels()
 
     private val binding by viewBinding(FragmentComposeBinding::bind)
 
@@ -42,13 +31,17 @@ internal class ComposeMovieDetailsFragment : Fragment(R.layout.fragment_compose)
         super.onViewCreated(view, savedInstanceState)
         binding.root.setContent {
             MovieDetailsView(
+                movieId = requireArguments().getLong(ARG_MOVIE_ID),
+                loadingTitle = requireArguments().getString(ARG_MOVIE_TITLE).orEmpty(),
                 viewModel = viewModel,
                 onNavigateIntent = { screenToNavigate ->
                     navigator.navigateTo(screenToNavigate)
                 },
                 onBackClick = navigator::back,
                 onWebSearchClick = {
-                    webNavigator.navigateTo(viewModel.movieId)
+                    viewModel.movieId?.let {
+                        webNavigator.navigateTo(it)
+                    }
                 }
             )
         }
