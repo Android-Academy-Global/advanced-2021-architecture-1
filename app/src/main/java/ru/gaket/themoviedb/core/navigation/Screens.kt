@@ -41,7 +41,7 @@ data class MovieDetailsScreen(
 
     override val tag: String get() = TAG
 
-    override val route: String = "details/$movieId/${title.replace(" ", "-")}"
+    override val route: String = "details/$movieId/${title}"
 
     companion object {
 
