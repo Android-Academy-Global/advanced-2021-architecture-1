@@ -6,7 +6,6 @@ import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsReview
 data class MovieDetailsState(
     val loadingTitle: String,
     val isMovieDetailsLoading: Boolean = false,
-    val screenToNavigate: Screen? = null,
     val moviePosterUrl: String = "",
     val movieTitle: String = "",
     val movieYear: String = "",

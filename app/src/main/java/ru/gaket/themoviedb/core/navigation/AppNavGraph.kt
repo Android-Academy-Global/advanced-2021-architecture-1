@@ -9,6 +9,12 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import ru.gaket.themoviedb.core.navigation.screens.authScreen
+import ru.gaket.themoviedb.core.navigation.screens.mainScreen
+import ru.gaket.themoviedb.core.navigation.screens.mainScreenRoute
+import ru.gaket.themoviedb.core.navigation.screens.movieDetailsScreen
+import ru.gaket.themoviedb.core.navigation.screens.navigateToAuth
+import ru.gaket.themoviedb.core.navigation.screens.navigateToMovieDetails
 import ru.gaket.themoviedb.presentation.auth.view.AuthView
 import ru.gaket.themoviedb.presentation.moviedetails.view.ComposeMovieDetailsFragment
 import ru.gaket.themoviedb.presentation.moviedetails.view.MovieDetailsView
@@ -24,47 +30,28 @@ fun AppNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = MoviesScreen.registrationRoute,
+        startDestination = mainScreenRoute,
         modifier = modifier
     ) {
-        composable(MoviesScreen.registrationRoute) {
-            MoviesView(
-                onMovieClick = {
-                    navController.navigate(
-                        MovieDetailsScreen(movieId = it.id, title = it.title).route
-                    )
-                }
-            )
-        }
+        mainScreen(
+            onMovieClick = {
+                navController.navigateToMovieDetails(movieId = it.id, title = it.title)
+            }
+        )
 
-        composable(AuthScreen.registrationRoute) {
-            AuthView(
-                onAuthorized = navController::popBackStack
-            )
-        }
+        authScreen(onBack = navController::popBackStack)
 
-        composable(
-            MovieDetailsScreen.registrationRoute,
-            arguments = listOf(
-                navArgument(MovieDetailsScreen.movieIdKey) { type = NavType.LongType },
-                navArgument(MovieDetailsScreen.titleKey) { type = NavType.StringType }
-            )
-        ) { backStack ->
-            val movieId = backStack.arguments?.getLong(MovieDetailsScreen.movieIdKey)
-                ?: throw IllegalStateException()
-            val title = backStack.arguments?.getString(MovieDetailsScreen.titleKey).orEmpty()
-
-            MovieDetailsView(
-                movieId = movieId,
-                loadingTitle = title,
-                onNavigateIntent = { screenToNavigate ->
-                    navController.navigate(screenToNavigate.route)
-                },
-                onBackClick = navController::popBackStack,
-                onWebSearchClick = {
-                    webNavigator.navigateTo(movieId)
-                }
-            )
-        }
+        movieDetailsScreen(
+            onNavigateToAuthScreen = {
+                navController.navigateToAuth()
+            },
+            onNavigateToReviewScreen = {
+                // далее навигация не сделана
+            },
+            onBackClick = navController::popBackStack,
+            onWebSearchClick = { movieId ->
+                webNavigator.navigateTo(movieId)
+            }
+        )
     }
 }

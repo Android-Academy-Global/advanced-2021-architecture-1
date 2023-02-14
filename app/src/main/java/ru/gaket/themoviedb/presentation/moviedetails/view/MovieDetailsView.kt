@@ -56,6 +56,7 @@ import ru.gaket.themoviedb.domain.review.models.Review
 import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsReview
 import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsReview.Add
 import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsReview.Existing
+import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsScreenAction
 import ru.gaket.themoviedb.presentation.moviedetails.viewmodel.MovieDetailsViewModel
 import ru.gaket.themoviedb.presentation.review.common.RatingView
 
@@ -83,7 +84,8 @@ internal fun MovieDetailsView(
     movieId: MovieId,
     loadingTitle: String,
     viewModel: MovieDetailsViewModel = hiltViewModel(),
-    onNavigateIntent: (Screen) -> Unit,
+    onNavigateToAuthScreen: () -> Unit,
+    onNavigateToReviewScreen: (MovieId) -> Unit,
     onBackClick: () -> Unit,
     onWebSearchClick: () -> Unit
 ) {
@@ -98,11 +100,7 @@ internal fun MovieDetailsView(
         movieRating = state.movieRating,
         movieOverview = state.movieOverview,
         movieReviews = state.movieReviews,
-        onAddReviewClick = {
-            state.screenToNavigate?.let {
-                onNavigateIntent(it)
-            }
-        },
+        onAddReviewClick = viewModel::onAddReviewClick,
         onBackClick = onBackClick,
         onWebSearchClick = onWebSearchClick
     )
@@ -112,6 +110,16 @@ internal fun MovieDetailsView(
             movieId = movieId,
             title = loadingTitle
         )
+    }
+
+    LaunchedEffect(true) {
+        viewModel.action.collect { action ->
+            when (action) {
+                MovieDetailsScreenAction.NavigateToAuthScreen -> onNavigateToAuthScreen()
+                is MovieDetailsScreenAction.NavigateToReviewScreen ->
+                    onNavigateToReviewScreen(action.movieId)
+            }
+        }
     }
 }
 

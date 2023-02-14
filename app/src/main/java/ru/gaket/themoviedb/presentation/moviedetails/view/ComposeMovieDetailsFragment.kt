@@ -8,7 +8,9 @@ import androidx.fragment.app.viewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 import ru.gaket.themoviedb.R
+import ru.gaket.themoviedb.core.navigation.AuthScreen
 import ru.gaket.themoviedb.core.navigation.Navigator
+import ru.gaket.themoviedb.core.navigation.ReviewScreen
 import ru.gaket.themoviedb.core.navigation.WebNavigator
 import ru.gaket.themoviedb.databinding.FragmentComposeBinding
 import ru.gaket.themoviedb.presentation.moviedetails.viewmodel.MovieDetailsViewModel
@@ -34,8 +36,11 @@ internal class ComposeMovieDetailsFragment : Fragment(R.layout.fragment_compose)
                 movieId = requireArguments().getLong(ARG_MOVIE_ID),
                 loadingTitle = requireArguments().getString(ARG_MOVIE_TITLE).orEmpty(),
                 viewModel = viewModel,
-                onNavigateIntent = { screenToNavigate ->
-                    navigator.navigateTo(screenToNavigate)
+                onNavigateToAuthScreen = {
+                    navigator.navigateTo(AuthScreen())
+                },
+                onNavigateToReviewScreen = {
+                    navigator.navigateTo(ReviewScreen(it))
                 },
                 onBackClick = navigator::back,
                 onWebSearchClick = {

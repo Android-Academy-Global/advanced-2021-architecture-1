@@ -6,7 +6,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -26,6 +28,7 @@ import ru.gaket.themoviedb.domain.movies.models.MovieId
 import ru.gaket.themoviedb.domain.movies.models.MovieWithReviews
 import ru.gaket.themoviedb.domain.review.models.MyReview
 import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsReview
+import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsScreenAction
 import ru.gaket.themoviedb.presentation.moviedetails.model.getCalendarYear
 import ru.gaket.themoviedb.util.Result
 import javax.inject.Inject
@@ -40,19 +43,19 @@ class MovieDetailsViewModel @Inject constructor(
 
     private val _movieDetailsState = MutableStateFlow(
         MovieDetailsState(
-            screenToNavigate = getScreenToNavigateOnReviewClick(),
             loadingTitle = "",
             isMovieDetailsLoading = true,
         )
     )
     val movieDetailsState: StateFlow<MovieDetailsState> = _movieDetailsState.asStateFlow()
 
+    val action = MutableSharedFlow<MovieDetailsScreenAction>()
+
     fun onStart(movieId: MovieId, title: String) {
         this.movieId = movieId
         viewModelScope.launch {
             _movieDetailsState.emit(
                 MovieDetailsState(
-                    screenToNavigate = getScreenToNavigateOnReviewClick(),
                     loadingTitle = title,
                     isMovieDetailsLoading = true,
                 )
@@ -70,6 +73,18 @@ class MovieDetailsViewModel @Inject constructor(
                 .collect { (detailsResult, isAuthorized) ->
                     handleLoadingMovieDetailsResult(detailsResult, isAuthorized)
                 }
+        }
+    }
+
+    fun onAddReviewClick() {
+        viewModelScope.launch {
+            movieId?.let {
+                if (authInteractor.isAuthorized()) {
+                    action.emit(MovieDetailsScreenAction.NavigateToReviewScreen(it))
+                } else {
+                    action.emit(MovieDetailsScreenAction.NavigateToAuthScreen)
+                }
+            }
         }
     }
 
@@ -92,7 +107,6 @@ class MovieDetailsViewModel @Inject constructor(
 
         _movieDetailsState.update { state ->
             state.copy(
-                screenToNavigate = getScreenToNavigateOnReviewClick(),
                 moviePosterUrl = movie.thumbnail,
                 movieTitle = movie.title,
                 movieYear = movie.releaseDate.getCalendarYear()?.toString().orEmpty(),
@@ -137,7 +151,6 @@ class MovieDetailsViewModel @Inject constructor(
     private fun emitErrorState(detailsResult: Result.Error<Throwable>) {
         _movieDetailsState.update { state ->
             state.copy(
-                screenToNavigate = getScreenToNavigateOnReviewClick(),
                 moviePosterUrl = "",
                 movieTitle = "",
                 movieYear = "",
@@ -148,16 +161,6 @@ class MovieDetailsViewModel @Inject constructor(
                 error = detailsResult.result,
                 isMovieDetailsLoading = false,
             )
-        }
-    }
-
-    private fun getScreenToNavigateOnReviewClick(): Screen? {
-        return movieId?.let {
-            if (authInteractor.isAuthorized()) {
-                ReviewScreen(it)
-            } else {
-                AuthScreen()
-            }
         }
     }
 }
