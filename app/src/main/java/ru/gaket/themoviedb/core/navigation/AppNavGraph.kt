@@ -40,7 +40,7 @@ fun AppNavGraph(
         )
 
         authScreen(onBack = navController::popBackStack)
-
+        
         movieDetailsScreen(
             onNavigateToAuthScreen = {
                 navController.navigateToAuth()

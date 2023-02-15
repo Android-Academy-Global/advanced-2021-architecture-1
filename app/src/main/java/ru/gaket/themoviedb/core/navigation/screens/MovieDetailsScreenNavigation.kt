@@ -5,18 +5,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import ru.gaket.themoviedb.core.navigation.MovieDetailsScreen
-import ru.gaket.themoviedb.core.navigation.Screen
 import ru.gaket.themoviedb.domain.movies.models.MovieId
-import ru.gaket.themoviedb.domain.movies.models.SearchMovie
 import ru.gaket.themoviedb.presentation.moviedetails.view.MovieDetailsView
-import ru.gaket.themoviedb.presentation.movies.view.MoviesView
 import java.lang.IllegalStateException
 
 private const val movieIdKey = "movieId"
 private const val titleKey = "title"
 
-private const val registrationRoute: String = "details/{$movieIdKey}/{$titleKey}"
+private const val baseRoute = "details"
+private const val movieDetailsRoute: String = "$baseRoute/{$movieIdKey}?titleKey={$titleKey}"
 
 fun NavGraphBuilder.movieDetailsScreen(
     onNavigateToAuthScreen: () -> Unit,
@@ -25,10 +22,14 @@ fun NavGraphBuilder.movieDetailsScreen(
     onWebSearchClick: (MovieId) -> Unit
 ) {
     composable(
-        registrationRoute,
+        route = movieDetailsRoute,
         arguments = listOf(
             navArgument(movieIdKey) { type = NavType.LongType },
-            navArgument(titleKey) { type = NavType.StringType }
+            navArgument(titleKey) {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
+            }
         )
     ) { backStack ->
         val movieId = backStack.arguments?.getLong(movieIdKey)
@@ -48,6 +49,9 @@ fun NavGraphBuilder.movieDetailsScreen(
     }
 }
 
-fun NavHostController.navigateToMovieDetails(movieId: Long, title: String) {
-    navigate("details/$movieId/${title}")
+/**
+ * Навигирует на экран деталей фильма с идентификатором [movieId] и заголовком [title]
+ */
+fun NavHostController.navigateToMovieDetails(movieId: Long, title: String? = null) {
+    navigate("$baseRoute/$movieId?titleKey=${title}")
 }
