@@ -31,10 +31,10 @@ fun NavGraphBuilder.movieDetailsScreen(
                 defaultValue = null
             }
         )
-    ) { backStack ->
-        val movieId = backStack.arguments?.getLong(movieIdKey)
+    ) { backStackEntry ->
+        val movieId = backStackEntry.arguments?.getLong(movieIdKey)
             ?: throw IllegalStateException()
-        val title = backStack.arguments?.getString(titleKey).orEmpty()
+        val title = backStackEntry.arguments?.getString(titleKey).orEmpty()
 
         MovieDetailsView(
             movieId = movieId,
