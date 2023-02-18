@@ -49,9 +49,6 @@ fun NavGraphBuilder.movieDetailsScreen(
     }
 }
 
-/**
- * Навигирует на экран деталей фильма с идентификатором [movieId] и заголовком [title]
- */
 fun NavHostController.navigateToMovieDetails(movieId: Long, title: String? = null) {
     navigate("$baseRoute/$movieId?titleKey=${title}")
 }
