@@ -32,14 +32,12 @@ class MainActivity : AppCompatActivity(R.layout.main_activity) {
         if (useClearComposeNavigation) {
             setContent {
                 // TODO: to be sets compose-theme and background color and insets
-                Surface {
-                    val navController = rememberNavController()
-                    AppNavGraph(
-                        navController = navController,
-                        modifier = Modifier,
-                        webNavigator = webNavigator
-                    )
-                }
+                val navController = rememberNavController()
+                AppNavGraph(
+                    navController = navController,
+                    modifier = Modifier,
+                    webNavigator = webNavigator
+                )
             }
         } else {
             if (savedInstanceState == null) {
