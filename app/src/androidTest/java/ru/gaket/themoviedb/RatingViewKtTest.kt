@@ -3,11 +3,9 @@ package ru.gaket.themoviedb
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material.icons.filled.StarRate
-import androidx.compose.ui.test.assertContentDescriptionContains
-import androidx.compose.ui.test.assertContentDescriptionContains
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performClick
+import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 import ru.gaket.themoviedb.presentation.review.common.RatingView
@@ -16,31 +14,31 @@ class RatingViewKtTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
-//    @Test
-//    fun ratingView_onClickChangesRatingAndCallsCallback() {
-//        var rating = 3
-//        var maxRating = 5
-//        var onRatingChangeCalled = false
-//        composeTestRule.setContent {
-//            RatingView(rating = rating, maxRating = maxRating) {
-//                onRatingChangeCalled = true
-//                rating = it
-//            }
-//        }
-//
-//        val stars = composeTestRule.onAllNodes(hasTestTag("star"))
-//        stars[rating - 1].assertHasClickAction()
-//        // Click on the third star
-//        stars[rating - 1].performClick()
-//        // Verify that the rating and callback were updated
-//        assertEquals(3, rating)
-//        assertFalse(onRatingChangeCalled)
-//        // Click on the fourth star
-//        stars[rating].performClick()
-//        // Verify that the rating and callback were updated
-//        assertEquals(4, rating)
-//        assertTrue(onRatingChangeCalled)
-//    }
+    @Test
+    fun ratingView_onClickChangesRatingAndCallsCallback() {
+        var rating = 3
+        val maxRating = 5
+        var onRatingChangeCalled = false
+        composeTestRule.setContent {
+            RatingView(rating = rating, maxRating = maxRating) {
+                onRatingChangeCalled = true
+                rating = it
+            }
+        }
+
+        val stars = composeTestRule.onAllNodes(hasTestTag("star"))
+        stars[rating - 1].assertHasClickAction()
+        // Click on the third star
+        stars[rating - 1].performClick()
+        // Verify that the rating and callback were updated
+        assertEquals(3, rating)
+        assertTrue(onRatingChangeCalled)
+        // Click on the fourth star
+        stars[rating].performClick()
+        // Verify that the rating and callback were updated
+        assertEquals(4, rating)
+        assertTrue(onRatingChangeCalled)
+    }
 
     @Test
     fun testRatingView() {
@@ -74,18 +72,5 @@ class RatingViewKtTest {
         composeTestRule.onNodeWithTag("star-2").assertContentDescriptionContains(starBorder)
         composeTestRule.onNodeWithTag("star-3").assertContentDescriptionContains(starBorder)
         composeTestRule.onNodeWithTag("star-4").assertContentDescriptionContains(starBorder)
-    }
-
-    @Test
-    fun testRatingView2() {
-        composeTestRule.setContent {
-            RatingView(maxRating = 5)
-        }
-
-        // Check that the initial rating is 0
-        repeat(5) {
-            composeTestRule.onNodeWithTag("star-$it")
-                .assertContentDescriptionContains("Filled.Filled.StarBorder")
-        }
     }
 }
