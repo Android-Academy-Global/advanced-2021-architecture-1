@@ -27,6 +27,7 @@ android {
         versionName "1.1.1"
 
         buildConfigField("String", "THE_MOVIE_DB_API_KEY", apikeyProperties['THE_MOVIE_DB_API_KEY'])
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -125,4 +126,8 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestoreKtx)
+    // Test rules and transitive dependencies:
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.3.2")
+// Needed for createAndroidComposeRule, but not createComposeRule:
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.3.2")
 }

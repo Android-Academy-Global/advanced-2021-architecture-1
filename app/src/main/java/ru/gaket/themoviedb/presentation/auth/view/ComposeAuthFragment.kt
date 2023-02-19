@@ -30,7 +30,6 @@ internal class ComposeAuthFragment : Fragment(R.layout.fragment_compose) {
     }
 
     companion object {
-
         fun newInstance(): ComposeAuthFragment = ComposeAuthFragment()
     }
 }
