@@ -7,12 +7,8 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import ru.gaket.themoviedb.domain.movies.models.MovieId
-import ru.gaket.themoviedb.domain.review.models.CreateReviewForm
-import ru.gaket.themoviedb.domain.review.models.CreateReviewState
-import ru.gaket.themoviedb.domain.review.models.CreateReviewStep
+import ru.gaket.themoviedb.domain.review.models.*
 import ru.gaket.themoviedb.domain.review.models.CreateReviewStep.FINISH
-import ru.gaket.themoviedb.domain.review.models.Rating
-import ru.gaket.themoviedb.domain.review.models.ReviewDraft
 import ru.gaket.themoviedb.domain.review.repository.CreateReviewScopedRepository
 import ru.gaket.themoviedb.domain.review.store.ItemStore
 import ru.gaket.themoviedb.util.Result
@@ -28,8 +24,8 @@ class CreateReviewScopedRepositoryImpl @AssistedInject constructor(
         Timber.d("CreateReviewScopedRepositoryImpl init")
 
         createReviewFormStore.item = CreateReviewState(
-            form = CreateReviewForm.newEmptyModelInstance(movieId),
-            step = CreateReviewStep.WHAT_LIKED
+            form = CreateReviewForm.dummyReviewInstance(movieId),
+            step = CreateReviewStep.RATING
         )
     }
 

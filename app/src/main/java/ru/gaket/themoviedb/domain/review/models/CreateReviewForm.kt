@@ -18,5 +18,13 @@ data class CreateReviewForm(
                 whatDidNotLike = null,
                 rating = null
             )
+
+        fun dummyReviewInstance(movieId: MovieId): CreateReviewForm =
+            CreateReviewForm(
+                movieId = movieId,
+                whatLiked = "It was awesome!",
+                whatDidNotLike = "Still not as good as Android Academy",
+                rating = null
+            )
     }
 }

@@ -9,10 +9,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -24,11 +21,18 @@ import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.gaket.themoviedb.R
 import ru.gaket.themoviedb.presentation.review.common.RatingView
+import ru.gaket.themoviedb.presentation.review.common.RatingViewStateful
 
 @Composable
 @Preview
 private fun ReviewRatingViewPreview() {
     ReviewRatingView(3, null, {}, {})
+}
+
+@Composable
+@Preview
+private fun StatefulReviewRatingViewPreview() {
+    ReviewRatingViewStateful(null, {}, {})
 }
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
@@ -37,8 +41,7 @@ internal fun ReviewRatingView(viewModel: RatingViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     // TODO handle disabled state
-    ReviewRatingView(
-        rating = state.rating,
+    ReviewRatingViewStateful(
         error = state.error,
         onRatingChange = viewModel::onRatingChange,
         onSubmit = viewModel::submit,
@@ -82,13 +85,70 @@ private fun ReviewRatingView(
                     .align(Alignment.CenterHorizontally)
                     .padding(top = dimensionResource(id = R.dimen.space_normal)),
             )
+        }
+
+        Spacer(modifier = Modifier.weight(weight = 1f))
+        Button(
+            onClick = onSubmit,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                text = stringResource(id = R.string.review_button_submit),
+            )
+        }
+    }
+    SnackbarHost(hostState = snackbarState)
+}
+
+
+@Composable
+private fun ReviewRatingViewStateful(
+    @StringRes error: Int?,
+    onRatingChange: (rating: Int) -> Unit,
+    onSubmit: () -> Unit,
+    snackbarState: SnackbarHostState = remember { SnackbarHostState() },
+) {
+    if (error != null) {
+        val message = stringResource(error)
+
+        LaunchedEffect(snackbarState) {
+            snackbarState.showSnackbar(
+                message = message,
+            )
+        }
+    }
+
+    var rating by remember {
+        mutableStateOf(0)
+    }
+    Column {
+        Column(
+            modifier = Modifier
+                .weight(weight = 1f)
+                .padding(horizontal = dimensionResource(id = R.dimen.space_normal)),
+        ) {
+            Text(
+                text = stringResource(id = R.string.review_rating_message),
+                fontSize = 24.sp,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+            )
+            RatingViewStateful(
+                onRatingChange = {
+                    rating = it
+                    onRatingChange(it)
+                },
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = dimensionResource(id = R.dimen.space_normal)),
+            )
             Spacer(modifier = Modifier.weight(weight = 1f))
             Button(
                 onClick = onSubmit,
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    text = stringResource(id = R.string.review_button_submit),
+                    text = "Submit $rating stars"
                 )
             }
         }

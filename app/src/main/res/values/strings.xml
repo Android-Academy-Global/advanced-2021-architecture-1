@@ -43,5 +43,6 @@
     <string name="authiorize_to_add_review_label">Click to Autorize to add review</string>
     <string name="review_my_review">My review</string>
     <string name="error_getting_movie_info">Error getting movie information!</string>
+    <string name="stars_description">Stars counter</string>
 
 </resources>
