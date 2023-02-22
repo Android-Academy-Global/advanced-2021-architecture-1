@@ -5,13 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.gaket.themoviedb.R
 import ru.gaket.themoviedb.core.navigation.AuthScreen
@@ -41,11 +35,13 @@ class MovieDetailsViewModel @AssistedInject constructor(
         fun create(movieId: MovieId, title: String): MovieDetailsViewModel
     }
 
-    private val _movieDetailsState = MutableStateFlow(MovieDetailsState(
-        screenToNavigate = getScreenToNavigateOnReviewClick(),
-        loadingTitle = title,
-        isMovieDetailsLoading = true,
-    ))
+    private val _movieDetailsState = MutableStateFlow(
+        MovieDetailsState(
+            screenToNavigate = getScreenToNavigateOnReviewClick(),
+            loadingTitle = title,
+            isMovieDetailsLoading = true,
+        )
+    )
     val movieDetailsState: StateFlow<MovieDetailsState> = _movieDetailsState.asStateFlow()
 
     init {
@@ -147,6 +143,24 @@ class MovieDetailsViewModel @AssistedInject constructor(
             ReviewScreen(movieId)
         } else {
             AuthScreen()
+        }
+    }
+
+    fun toggleLikeState() {
+        _movieDetailsState.update {
+            it.copy(liked = !it.liked)
+        }
+    }
+
+    fun startAnimation() {
+        _movieDetailsState.update {
+            it.copy(animationIsActive = true)
+        }
+    }
+
+    fun stopAnimation() {
+        _movieDetailsState.update {
+            it.copy(animationIsActive = false)
         }
     }
 }

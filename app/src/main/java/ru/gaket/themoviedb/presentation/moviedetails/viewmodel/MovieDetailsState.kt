@@ -15,4 +15,6 @@ data class MovieDetailsState(
     val movieOverview: String = "",
     val movieReviews: List<MovieDetailsReview> = emptyList(),
     val error: Throwable? = null,
+    val liked: Boolean = false,
+    val animationIsActive : Boolean = false
 )
