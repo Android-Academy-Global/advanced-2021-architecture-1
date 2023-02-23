@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import ru.gaket.themoviedb.domain.movies.models.MovieId
 import ru.gaket.themoviedb.presentation.moviedetails.view.MovieDetailsView
 import java.lang.IllegalStateException
@@ -14,6 +15,7 @@ private const val titleKey = "title"
 
 private const val baseRoute = "details"
 private const val movieDetailsRoute: String = "$baseRoute/{$movieIdKey}?titleKey={$titleKey}"
+private const val appLinkPath = "moviedb"
 
 fun NavGraphBuilder.movieDetailsScreen(
     onNavigateToAuthScreen: () -> Unit,
@@ -30,7 +32,8 @@ fun NavGraphBuilder.movieDetailsScreen(
                 nullable = true
                 defaultValue = null
             }
-        )
+        ),
+        deepLinks = listOf(navDeepLink { uriPattern = "$appLinkPath://$movieDetailsRoute" })
     ) { backStackEntry ->
         val movieId = backStackEntry.arguments?.getLong(movieIdKey)
             ?: throw IllegalStateException()
