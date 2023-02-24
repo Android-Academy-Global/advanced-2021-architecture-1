@@ -1,10 +1,12 @@
 package ru.gaket.themoviedb.presentation
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import ru.gaket.themoviedb.R
@@ -26,6 +28,8 @@ class MainActivity : AppCompatActivity(R.layout.main_activity) {
     @Inject
     lateinit var webNavigator: WebNavigator
 
+    private var navController: NavController? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -33,6 +37,7 @@ class MainActivity : AppCompatActivity(R.layout.main_activity) {
             setContent {
                 // TODO: to be sets compose-theme and background color and insets
                 val navController = rememberNavController()
+                this.navController = navController
                 AppNavGraph(
                     navController = navController,
                     modifier = Modifier,
@@ -47,5 +52,10 @@ class MainActivity : AppCompatActivity(R.layout.main_activity) {
                 )
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        navController?.handleDeepLink(intent)
     }
 }
