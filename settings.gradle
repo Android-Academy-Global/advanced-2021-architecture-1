@@ -3,3 +3,5 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name='TheMovieDb'
 include ':app'
+
+includeBuild("build-logic")
