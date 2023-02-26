@@ -19,8 +19,8 @@ private fun RatingViewPreview() {
 
 @Composable
 internal fun RatingView(
-    modifier: Modifier = Modifier,
     rating: Int,
+    modifier: Modifier = Modifier,
     maxRating: Int = 5,
     onRatingChange: (newRating: Int) -> Unit = {},
 ) {

@@ -47,6 +47,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import ru.gaket.themoviedb.R
 import ru.gaket.themoviedb.core.navigation.Navigator
 import ru.gaket.themoviedb.core.navigation.WebNavigator
@@ -68,7 +71,7 @@ private fun MovieDetailsViewPreview() {
         movieGenres = "Action, Comedy",
         movieRating = 5,
         movieOverview = "Lorem ipsum dolor mit amet",
-        movieReviews = emptyList(),
+        movieReviews = persistentListOf(),
         onAddReviewClick = {},
         onBackClick = {},
         onWebSearchClick = {},
@@ -92,7 +95,7 @@ internal fun MovieDetailsView(
         movieGenres = state.movieGenres,
         movieRating = state.movieRating,
         movieOverview = state.movieOverview,
-        movieReviews = state.movieReviews,
+        movieReviews = state.movieReviews.toPersistentList(),
         onAddReviewClick = { navigator.navigateTo(state.screenToNavigate) },
         onBackClick = navigator::back,
         onWebSearchClick = {
@@ -109,7 +112,7 @@ private fun MovieDetailsView(
     movieGenres: String,
     movieRating: Int,
     movieOverview: String,
-    movieReviews: List<MovieDetailsReview>,
+    movieReviews: PersistentList<MovieDetailsReview>,
     onAddReviewClick: () -> Unit,
     onBackClick: () -> Unit,
     onWebSearchClick: () -> Unit,
