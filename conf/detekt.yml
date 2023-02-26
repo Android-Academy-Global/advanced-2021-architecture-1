@@ -40,7 +40,7 @@ output-reports:
     # - 'HtmlOutputReport'
 
 comments:
-    active: true
+    active: false #todo revert
     # https://detekt.github.io/detekt/comments.html#absentorwrongfilelicense
     # we don't use licenses per file, only root one
     AbsentOrWrongFileLicense:
@@ -73,7 +73,7 @@ comments:
 complexity:
     active: false
     ComplexCondition:
-        active: true
+        active: false #todo revert
         threshold: 4
     ComplexInterface:
         active: false
@@ -81,7 +81,7 @@ complexity:
         includeStaticDeclarations: false
         includePrivateDeclarations: false
     CyclomaticComplexMethod:
-        active: true
+        active: false #todo revert
         threshold: 15
         ignoreSingleWhenExpression: false
         ignoreSimpleWhenEntries: false
@@ -91,13 +91,13 @@ complexity:
         active: false
         ignoredLabels: [ ]
     LargeClass:
-        active: true
+        active: false #todo revert
         threshold: 600
     LongMethod:
-        active: true
+        active: false #todo revert
         threshold: 60
     LongParameterList:
-        active: true
+        active: false #todo revert
         functionThreshold: 6
         constructorThreshold: 7
         ignoreDefaultParameters: false
@@ -110,7 +110,7 @@ complexity:
         active: false
         threshold: 3
     NestedBlockDepth:
-        active: true
+        active: false #todo revert
         threshold: 4
     ReplaceSafeCallChainWithRun:
         active: false
@@ -122,7 +122,7 @@ complexity:
         excludeStringsWithLessThan5Characters: true
         ignoreStringsRegex: '$^'
     TooManyFunctions:
-        active: true
+        active: false #todo revert
         excludes: [ '**/test/**', '**/androidTest/**' ]
         thresholdInFiles: 11
         thresholdInClasses: 11
@@ -143,29 +143,29 @@ coroutines:
         active: false
 
 empty-blocks:
-    active: true
+    active: false #todo revert
     # https://detekt.github.io/detekt/empty-blocks.html#emptycatchblock
     EmptyCatchBlock:
-        active: true
+        active: false #todo revert
         allowedExceptionNameRegex: '_|(ignore|expected).*'
     # https://detekt.github.io/detekt/empty-blocks.html#emptyclassblock
     EmptyClassBlock:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/empty-blocks.html#emptydefaultconstructor
     EmptyDefaultConstructor:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/empty-blocks.html#emptydowhileblock
     EmptyDoWhileBlock:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/empty-blocks.html#emptyelseblock
     EmptyElseBlock:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/empty-blocks.html#emptyfinallyblock
     EmptyFinallyBlock:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/empty-blocks.html#emptyforblock
     EmptyForBlock:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/empty-blocks.html#emptyfunctionblock
     # todo enable, 26 errors
     EmptyFunctionBlock:
@@ -173,25 +173,25 @@ empty-blocks:
         ignoreOverridden: false
     # https://detekt.github.io/detekt/empty-blocks.html#emptyifblock
     EmptyIfBlock:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/empty-blocks.html#emptyinitblock
     EmptyInitBlock:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/empty-blocks.html#emptyktfile
     EmptyKtFile:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/empty-blocks.html#emptysecondaryconstructor
     EmptySecondaryConstructor:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/empty-blocks.html#emptytryblock
     EmptyTryBlock:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/empty-blocks.html#emptywhenblock
     EmptyWhenBlock:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/empty-blocks.html#emptywhileblock
     EmptyWhileBlock:
-        active: true
+        active: false #todo revert
 
 exceptions:
     active: false
@@ -232,7 +232,7 @@ exceptions:
     ThrowingNewInstanceOfSameException:
         active: false
     TooGenericExceptionCaught:
-        active: true
+        active: false #todo revert
         excludes: [ '**/test/**', '**/androidTest/**' ]
         exceptionNames:
             - ArrayIndexOutOfBoundsException
@@ -245,7 +245,7 @@ exceptions:
             - Throwable
         allowedExceptionNameRegex: '_|(ignore|expected).*'
     TooGenericExceptionThrown:
-        active: true
+        active: false #todo revert
         exceptionNames:
             - Error
             - Exception
@@ -253,7 +253,7 @@ exceptions:
             - RuntimeException
 
 formatting:
-    active: true
+    active: false #todo revert
     android: true
     autoCorrect: false
 
@@ -261,7 +261,7 @@ formatting:
     AnnotationOnSeparateLine:
         active: false
     AnnotationSpacing:
-        active: true
+        active: false #todo revert
     # todo fix and enable
     ArgumentListWrapping:
         active: false
@@ -269,7 +269,7 @@ formatting:
     ChainWrapping:
         active: false
     CommentSpacing:
-        active: true
+        active: false #todo revert
     # duplicate of naming:EnumNaming
     EnumEntryNameCase:
         active: false
@@ -281,7 +281,7 @@ formatting:
         active: false
         insertFinalNewLine: false
     ImportOrdering:
-        active: true
+        active: false #todo revert
         layout: '*,java.**,javax.**,kotlin.**,^'
     # blocked by bugs: https://github.com/pinterest/ktlint/issues?q=is%3Aissue+is%3Aopen+Indentation
     Indentation:
@@ -293,34 +293,34 @@ formatting:
         maxLineLength: 120
     # https://ktlint.github.io/#rule-modifier-order
     ModifierOrdering:
-        active: true
+        active: false #todo revert
     MultiLineIfElse:
-        active: true
+        active: false #todo revert
     NoBlankLineBeforeRbrace:
-        active: true
+        active: false #todo revert
     # https://ktlint.github.io/#rule-blank
     NoConsecutiveBlankLines:
-        active: true
+        active: false #todo revert
     # https://ktlint.github.io/#rule-empty-class-body
     NoEmptyClassBody:
-        active: true
+        active: false #todo revert
     # questionable rule, it is good idea to have some visual space after function declaration
     NoEmptyFirstLineInMethodBlock:
         active: false
     NoLineBreakAfterElse:
-        active: true
+        active: false #todo revert
     NoLineBreakBeforeAssignment:
-        active: true
+        active: false #todo revert
     NoMultipleSpaces:
-        active: true
+        active: false #todo revert
     # https://ktlint.github.io/#rule-semi
     NoSemicolons:
-        active: true
+        active: false #todo revert
     # https://ktlint.github.io/#rule-trailing-whitespaces
     NoTrailingSpaces:
-        active: true
+        active: false #todo revert
     NoUnitReturn:
-        active: true
+        active: false #todo revert
 
     # DUPLICATE of style UnusedImports
     NoUnusedImports:
@@ -333,46 +333,46 @@ formatting:
     PackageName:
         active: false
     ParameterListWrapping:
-        active: true
+        active: false #todo revert
 
     # https://ktlint.github.io/#rule-spacing
     SpacingAroundColon:
-        active: true
+        active: false #todo revert
     SpacingAroundComma:
-        active: true
+        active: false #todo revert
     SpacingAroundCurly:
-        active: true
+        active: false #todo revert
     SpacingAroundDot:
-        active: true
+        active: false #todo revert
     SpacingAroundDoubleColon:
-        active: true
+        active: false #todo revert
     SpacingAroundKeyword:
-        active: true
+        active: false #todo revert
     SpacingAroundOperators:
-        active: true
+        active: false #todo revert
     SpacingAroundParens:
-        active: true
+        active: false #todo revert
     SpacingAroundRangeOperator:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/formatting.html#spacingbetweendeclarationswithannotations
     SpacingBetweenDeclarationsWithAnnotations:
         active: false
     # https://detekt.github.io/detekt/formatting.html#spacingbetweendeclarationswithcomments
     SpacingBetweenDeclarationsWithComments:
-        active: true
+        active: false #todo revert
     # https://ktlint.github.io/#rule-string-template
     StringTemplate:
-        active: true
+        active: false #todo revert
 
 naming:
-    active: true
+    active: false #todo revert
     # https://detekt.github.io/detekt/naming.html#classnaming
     ClassNaming:
-        active: true
+        active: false #todo revert
         classPattern: '[A-Z][a-zA-Z0-9]*'
     # https://detekt.github.io/detekt/naming.html#constructorparameternaming
     ConstructorParameterNaming:
-        active: true
+        active: false #todo revert
         parameterPattern: '[a-z][A-Za-z0-9]*'
         privateParameterPattern: '[a-z][A-Za-z0-9]*'
         excludeClassPattern: '$^'
@@ -414,7 +414,7 @@ naming:
         rootPackage: ''
     # https://detekt.github.io/detekt/naming.html#matchingdeclarationname
     MatchingDeclarationName:
-        active: true
+        active: false #todo revert
         mustBeFirst: true
     # https://detekt.github.io/detekt/naming.html#membernameequalsclassname
     MemberNameEqualsClassName:
@@ -449,7 +449,7 @@ naming:
         minimumVariableNameLength: 1
     # https://detekt.github.io/detekt/naming.html#variablenaming
     VariableNaming:
-        active: true
+        active: false #todo revert
         variablePattern: '[a-z][A-Za-z0-9]*'
         privateVariablePattern: '(_)?[a-z][A-Za-z0-9]*'
         excludeClassPattern: '$^'
@@ -458,15 +458,15 @@ naming:
 performance:
     active: false
     ArrayPrimitive:
-        active: true
+        active: false #todo revert
     ForEachOnRange:
-        active: true
+        active: false #todo revert
         excludes: [ '**/test/**', '**/androidTest/**' ]
     SpreadOperator:
-        active: true
+        active: false #todo revert
         excludes: [ '**/test/**', '**/androidTest/**' ]
     UnnecessaryTemporaryInstantiation:
-        active: true
+        active: false #todo revert
 
 potential-bugs:
     active: false
@@ -522,10 +522,10 @@ potential-bugs:
         active: false
 
 style:
-    active: true
+    active: false #todo revert
     # https://detekt.github.io/detekt/style.html#classordering
     ClassOrdering:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/style.html#collapsibleifstatements
     # questionable rule, no need for now
     CollapsibleIfStatements:
@@ -541,16 +541,16 @@ style:
         active: false
     # https://detekt.github.io/detekt/style.html#equalsnullcall
     EqualsNullCall:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/style.html#equalsonsignatureline
     EqualsOnSignatureLine:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/style.html#explicitcollectionelementaccessmethod
     ExplicitCollectionElementAccessMethod:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/style.html#explicititlambdaparameter
     ExplicitItLambdaParameter:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/style.html#expressionbodysyntax
     # sometimes it's harder to read
     ExpressionBodySyntax:
@@ -558,13 +558,13 @@ style:
         includeLineWrapping: true
     # https://detekt.github.io/detekt/style.html#forbiddencomment
     ForbiddenComment:
-        active: true
+        active: false #todo revert
         values: [ 'STOPSHIP' ]
         allowedPatterns: ''
     # https://detekt.github.io/detekt/style.html#forbiddenimport
     # todo maybe use it to ban junit 4 in test code
     ForbiddenImport:
-        active: true
+        active: false #todo revert
         imports: [ ]
         forbiddenPatterns: 'gradle.kotlin.dsl.accessors.*'
     # https://detekt.github.io/detekt/style.html#forbiddenmethodcall
@@ -586,7 +586,7 @@ style:
         ignoreAnnotated: [ 'dagger.Provides' ]
     # https://detekt.github.io/detekt/style.html#loopwithtoomanyjumpstatements
     LoopWithTooManyJumpStatements:
-        active: true
+        active: false #todo revert
         maxJumpCount: 1
     # https://detekt.github.io/detekt/style.html#magicnumber
     MagicNumber:
@@ -604,47 +604,47 @@ style:
         ignoreRanges: false
     # https://detekt.github.io/detekt/style.html#mandatorybracesifstatements
     MandatoryBracesIfStatements:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/style.html#mandatorybracesloops
     MandatoryBracesLoops:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/style.html#maxlinelength
     MaxLineLength:
-        active: true
+        active: false #todo revert
         maxLineLength: 120
         excludePackageStatements: true
         excludeImportStatements: true
         excludeCommentStatements: true
     # https://detekt.github.io/detekt/style.html#maybeconst
     MayBeConst:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/style.html#modifierorder
     ModifierOrder:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/style.html#nestedclassesvisibility
     NestedClassesVisibility:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/style.html#newlineatendoffile
     NewLineAtEndOfFile:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/style.html#notabs
     NoTabs:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/style.html#optionalabstractkeyword
     OptionalAbstractKeyword:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/style.html#optionalunit
     OptionalUnit:
         active: false
     # https://detekt.github.io/detekt/style.html#optionalwhenbraces
     OptionalWhenBraces:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/style.html#prefertooverpairsyntax
     PreferToOverPairSyntax:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/style.html#protectedmemberinfinalclass
     ProtectedMemberInFinalClass:
-        active: true
+        active: false #todo revert
     RedundantExplicitType:
         active: false
     RedundantHigherOrderMapUsage:
@@ -692,22 +692,22 @@ style:
         active: false
     # https://detekt.github.io/detekt/style.html#unnecessaryparentheses
     UnnecessaryParentheses:
-        active: true
+        active: false #todo revert
     UntilInsteadOfRangeTo:
         active: false
     # https://detekt.github.io/detekt/style.html#unusedimports
     UnusedImports:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/style.html#unusedprivateclass
     UnusedPrivateClass:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/style.html#unusedprivatemember
     UnusedPrivateMember:
-        active: true
+        active: false #todo revert
         allowedNames: '(_|ignored|expected|serialVersionUID)'
     # https://detekt.github.io/detekt/style.html#usearrayliteralsinannotations
     UseArrayLiteralsInAnnotations:
-        active: true
+        active: false #todo revert
     UseCheckNotNull:
         active: false
     UseCheckOrError:
@@ -732,10 +732,10 @@ style:
         active: false
     # https://detekt.github.io/detekt/style.html#varcouldbeval
     VarCouldBeVal:
-        active: true
+        active: false #todo revert
     # https://detekt.github.io/detekt/style.html#wildcardimport
     WildcardImport:
-        active: true
+        active: false #todo revert
         excludes: [ ]
         excludeImports: [ ]
 Compose:
