@@ -14,6 +14,7 @@ buildscript {
         classpath(libs.kotlinGradle)
         classpath(libs.hiltGradle)
         classpath(libs.googleServicesGradle)
+        classpath(libs.kspGradle)
     }
 }
 
