@@ -4,10 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.material.Surface
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import dagger.hilt.android.AndroidEntryPoint
 import ru.gaket.themoviedb.R
 import ru.gaket.themoviedb.core.navigation.AppNavGraph
@@ -16,9 +16,10 @@ import ru.gaket.themoviedb.core.navigation.Navigator
 import ru.gaket.themoviedb.core.navigation.WebNavigator
 import javax.inject.Inject
 
-/* Временная мера для быстрого переключения механизма навигации */
+/* Temporary measure to quickly switch the navigation mechanism */
 private const val useClearComposeNavigation = true
 
+@OptIn(ExperimentalAnimationApi::class)
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(R.layout.main_activity) {
 
@@ -36,13 +37,15 @@ class MainActivity : AppCompatActivity(R.layout.main_activity) {
         if (useClearComposeNavigation) {
             setContent {
                 // TODO: to be sets compose-theme and background color and insets
-                val navController = rememberNavController()
+                val navController = rememberAnimatedNavController()
                 this.navController = navController
+
                 AppNavGraph(
                     navController = navController,
                     modifier = Modifier,
                     webNavigator = webNavigator
                 )
+
             }
         } else {
             if (savedInstanceState == null) {

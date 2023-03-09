@@ -1,9 +1,10 @@
 package ru.gaket.themoviedb.core.navigation.screens
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.composable
+import com.google.accompanist.navigation.animation.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import ru.gaket.themoviedb.domain.movies.models.MovieId
@@ -17,6 +18,7 @@ private const val baseRoute = "details"
 private const val movieDetailsRoute: String = "$baseRoute/{$movieIdKey}?titleKey={$titleKey}"
 private const val appLinkPath = "moviedb"
 
+@OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.movieDetailsScreen(
     onNavigateToAuthScreen: () -> Unit,
     onNavigateToReviewScreen: (MovieId) -> Unit,

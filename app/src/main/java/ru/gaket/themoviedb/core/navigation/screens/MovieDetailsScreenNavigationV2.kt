@@ -1,16 +1,16 @@
 package ru.gaket.themoviedb.core.navigation.screens
 
 import android.util.Base64
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.composable
+import com.google.accompanist.navigation.animation.composable
 import androidx.navigation.navArgument
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import ru.gaket.themoviedb.domain.movies.models.MovieId
 import ru.gaket.themoviedb.presentation.moviedetails.view.MovieDetailsView
-import java.lang.IllegalStateException
 
 private const val paramKey = "param"
 
@@ -28,6 +28,7 @@ private data class MovieDetailsScreenParams(
 /**
  * Example of navigation to movie details screen by using complex param with Base64 and GSON
  */
+@OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.movieDetailsScreenV2(
     onNavigateToAuthScreen: () -> Unit,
     onNavigateToReviewScreen: (MovieId) -> Unit,

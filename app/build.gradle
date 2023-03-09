@@ -128,4 +128,5 @@ dependencies {
 
     implementation(libs.navigation.compose)
     implementation(libs.navigation.hilt)
+    implementation(libs.navigation.animations)
 }
