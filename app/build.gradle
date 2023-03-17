@@ -104,6 +104,8 @@ dependencies {
     implementation(libs.compose.runtime)
     implementation(libs.compose.runtime.livedata)
 
+    implementation(libs.kotlinx.immutableCollections)
+
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.coil)
 
