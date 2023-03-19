@@ -1,6 +1,6 @@
 package ru.gaket.themoviedb.core.navigation.screens
 
-import android.util.Base64
+import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -43,10 +43,7 @@ fun NavGraphBuilder.movieDetailsScreenV2(
             }
         )
     ) { backStackEntry ->
-        val paramJson = Base64.decode(
-            backStackEntry.arguments?.getString(paramKey),
-            Base64.URL_SAFE
-        ).toString(Charsets.UTF_8)
+        val paramJson = Uri.decode(backStackEntry.arguments?.getString(paramKey))
 
         val param = Gson().fromJson(
             paramJson,
@@ -71,6 +68,6 @@ fun NavGraphBuilder.movieDetailsScreenV2(
 fun NavHostController.navigateToMovieDetailsV2(movieId: Long, title: String? = null) {
     val screenParams = MovieDetailsScreenParams(movieId, title)
     val param: String = Gson().toJson(screenParams)
-    val paramInBase64 = Base64.encodeToString(param.toByteArray(Charsets.UTF_8), Base64.URL_SAFE)
-    navigate("$baseRoute/$paramInBase64")
+    val paramEncoded = Uri.encode(param)
+    navigate("$baseRoute/$paramEncoded")
 }
