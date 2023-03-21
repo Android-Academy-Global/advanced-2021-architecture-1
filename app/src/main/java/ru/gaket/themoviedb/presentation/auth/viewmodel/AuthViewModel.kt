@@ -69,7 +69,6 @@ class AuthViewModel @Inject constructor(
                     isPasswordErrorVisible = false,
                     emailError = null,
                     isEmailErrorVisible = false,
-                    isAuthBtnEnabled = true,
                     isAuthorized = true,
                     logInError = null,
                 )
