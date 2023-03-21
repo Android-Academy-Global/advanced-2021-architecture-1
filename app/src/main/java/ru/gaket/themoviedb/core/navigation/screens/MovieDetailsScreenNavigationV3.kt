@@ -32,19 +32,20 @@ fun NavGraphBuilder.movieDetailsScreenV3(
     ) { backStackEntry ->
         val movieId =
             backStackEntry.savedStateHandle.getLiveData<Long>(movieIdKey).observeAsState().value
-                ?: throw IllegalStateException()
         val title = backStackEntry.savedStateHandle.get<String>(titleKey).orEmpty()
 
-        MovieDetailsView(
-            movieId = movieId,
-            loadingTitle = title,
-            onNavigateToAuthScreen = onNavigateToAuthScreen,
-            onNavigateToReviewScreen = onNavigateToReviewScreen,
-            onBackClick = onBackClick,
-            onWebSearchClick = {
-                onWebSearchClick(movieId)
-            }
-        )
+        if (movieId != null) {
+            MovieDetailsView(
+                movieId = movieId,
+                loadingTitle = title,
+                onNavigateToAuthScreen = onNavigateToAuthScreen,
+                onNavigateToReviewScreen = onNavigateToReviewScreen,
+                onBackClick = onBackClick,
+                onWebSearchClick = {
+                    onWebSearchClick(movieId)
+                }
+            )
+        }
     }
 }
 
