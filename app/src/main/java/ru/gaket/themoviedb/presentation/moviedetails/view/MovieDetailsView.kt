@@ -53,7 +53,6 @@ import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import ru.gaket.themoviedb.R
-import ru.gaket.themoviedb.core.navigation.Screen
 import ru.gaket.themoviedb.domain.movies.models.MovieId
 import ru.gaket.themoviedb.domain.review.models.Review
 import ru.gaket.themoviedb.presentation.moviedetails.model.MovieDetailsReview
@@ -102,7 +101,7 @@ internal fun MovieDetailsView(
         movieGenres = state.movieGenres,
         movieRating = state.movieRating,
         movieOverview = state.movieOverview,
-        movieReviews = state.movieReviews,
+        movieReviews = state.movieReviews.toPersistentList(),
         onAddReviewClick = viewModel::onAddReviewClick,
         onBackClick = onBackClick,
         onWebSearchClick = onWebSearchClick
