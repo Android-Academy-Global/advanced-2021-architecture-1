@@ -45,6 +45,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import ru.gaket.themoviedb.R
 import ru.gaket.themoviedb.domain.movies.models.SearchMovie
 import ru.gaket.themoviedb.domain.movies.models.SearchMovieWithMyReview
@@ -55,7 +58,7 @@ import ru.gaket.themoviedb.presentation.movies.viewmodel.MoviesViewModel
 private fun MoviesViewPreview() {
     MoviesView(
         queryInput = "",
-        movies = emptyList(),
+        movies = persistentListOf(),
         isSearchInProgress = false,
         searchResultPlaceholder = null,
         onNewQuery = {},
@@ -73,7 +76,7 @@ internal fun MoviesView(
 
     MoviesView(
         queryInput = state.query,
-        movies = state.movies,
+        movies = state.movies.toPersistentList(),
         isSearchInProgress = state.isMoviesLoading,
         searchResultPlaceholder = state.resultPlaceholder,
         onNewQuery = viewModel::onNewQuery,
@@ -84,7 +87,7 @@ internal fun MoviesView(
 @Composable
 private fun MoviesView(
     queryInput: String,
-    movies: List<SearchMovieWithMyReview>,
+    movies: PersistentList<SearchMovieWithMyReview>,
     searchResultPlaceholder: Int?,
     isSearchInProgress: Boolean,
     onNewQuery: (String) -> Unit,
@@ -132,18 +135,18 @@ private fun MoviesView(
 
 @Composable
 private fun SearchView(
-    modifier: Modifier = Modifier,
     input: String,
+    hint: String,
+    onInputChanged: (String) -> Unit,
+    modifier: Modifier = Modifier,
     inputTextStyle: TextStyle = TextStyle(
         color = Color.Black,
         fontSize = 14.sp,
     ),
-    hint: String,
     hintTextStyle: TextStyle = TextStyle(
         color = colorResource(id = R.color.textColorSecondary),
         fontSize = 14.sp,
     ),
-    onInputChanged: (String) -> Unit,
     trailingView: @Composable () -> Unit,
 ) {
     BasicTextField(

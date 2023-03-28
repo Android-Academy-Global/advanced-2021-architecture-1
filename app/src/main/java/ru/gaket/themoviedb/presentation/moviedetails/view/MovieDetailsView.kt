@@ -49,6 +49,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import ru.gaket.themoviedb.R
 import ru.gaket.themoviedb.core.navigation.Screen
 import ru.gaket.themoviedb.domain.movies.models.MovieId
@@ -71,7 +74,7 @@ private fun MovieDetailsViewPreview() {
         movieGenres = "Action, Comedy",
         movieRating = 5,
         movieOverview = "Lorem ipsum dolor mit amet",
-        movieReviews = emptyList(),
+        movieReviews = persistentListOf(),
         onAddReviewClick = {},
         onBackClick = {},
         onWebSearchClick = {},
@@ -132,7 +135,7 @@ private fun MovieDetailsView(
     movieGenres: String,
     movieRating: Int,
     movieOverview: String,
-    movieReviews: List<MovieDetailsReview>,
+    movieReviews: PersistentList<MovieDetailsReview>,
     onAddReviewClick: () -> Unit,
     onBackClick: () -> Unit,
     onWebSearchClick: () -> Unit,

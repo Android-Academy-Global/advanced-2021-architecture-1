@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("kotlin-kapt")
+    id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     id("com.google.gms.google-services")
 }
@@ -103,6 +104,8 @@ dependencies {
     implementation(libs.compose.materialIcons)
     implementation(libs.compose.runtime)
     implementation(libs.compose.runtime.livedata)
+
+    implementation(libs.kotlinx.immutableCollections)
 
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.coil)

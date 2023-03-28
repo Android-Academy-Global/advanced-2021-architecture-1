@@ -1,3 +1,7 @@
+plugins {
+    id("convention.detekt")
+}
+
 buildscript {
 
     repositories {
@@ -10,6 +14,7 @@ buildscript {
         classpath(libs.kotlinGradle)
         classpath(libs.hiltGradle)
         classpath(libs.googleServicesGradle)
+        classpath(libs.kspGradle)
     }
 }
 
@@ -18,8 +23,4 @@ allprojects {
         google()
         mavenCentral()
     }
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
 }

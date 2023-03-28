@@ -30,3 +30,6 @@ jobs:
         
       - name: Assemble debug
         run: ./gradlew assembleDebug
+
+      - name: Detekt
+        run: make detekt
