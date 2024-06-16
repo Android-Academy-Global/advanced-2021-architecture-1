@@ -35,7 +35,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.filter
 import ru.gaket.themoviedb.R
@@ -60,7 +59,6 @@ private fun AuthViewPreview() {
     )
 }
 
-@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 internal fun AuthView(
     viewModel: AuthViewModel,

@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.gaket.themoviedb.R
 import ru.gaket.themoviedb.presentation.review.common.ReviewTextView
@@ -20,7 +19,6 @@ private fun WhatLikeViewPreview() {
     )
 }
 
-@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 internal fun WhatLikeView(viewModel: WhatLikeViewModel) {
     val submittedReviewState by viewModel.reviewTextState.collectAsStateWithLifecycle()

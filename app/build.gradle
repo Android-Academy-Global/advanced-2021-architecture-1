@@ -1,17 +1,13 @@
 plugins {
-    id("com.android.application")
-    id("kotlin-android")
-    id("kotlin-kapt")
-    id("dagger.hilt.android.plugin")
-    id("com.google.gms.google-services")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.compose)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.gms)
+    alias(libs.plugins.jetbrains.kotlin.android)
 }
 
 apply from: '../gradle_scripts/apk_signing_configs.gradle'
-
-// Hilt. Allow references to generated code
-kapt {
-    correctErrorTypes true
-}
 
 android {
     compileSdk = libs.versions.compileSdk.get().toInteger()
@@ -42,7 +38,7 @@ android {
         }
     }
 
-    flavorDimensions "serverType"
+    flavorDimensions = ['serverType']
     productFlavors {
         prod {
             dimension "serverType"
@@ -68,22 +64,13 @@ android {
         viewBinding true
     }
 
-    kapt {
-        arguments {
-            arg("room.incremental", "true")
-            arg("room.expandProjection", "true")
-            arg("room.schemaLocation", "$projectDir/room_db_schemas".toString())
-        }
-    }
-
-    kotlinOptions {
-        freeCompilerArgs += "-opt-in=kotlinx.coroutines.FlowPreview"
-        freeCompilerArgs += "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
-        freeCompilerArgs += "-opt-in=kotlin.contracts.ExperimentalContracts"
-    }
-
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
+    }
+    namespace 'ru.gaket.themoviedb'
+
+    kotlinOptions {
+        jvmTarget = '1.8'
     }
 }
 
@@ -95,7 +82,8 @@ dependencies {
 
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    kapt(libs.room.compiler)
+    implementation(libs.androidx.core.ktx)
+    ksp(libs.room.compiler)
 
     debugImplementation(libs.compose.uiTooling)
     implementation(libs.compose.preview)
@@ -117,7 +105,7 @@ dependencies {
     implementation(libs.material)
 
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)

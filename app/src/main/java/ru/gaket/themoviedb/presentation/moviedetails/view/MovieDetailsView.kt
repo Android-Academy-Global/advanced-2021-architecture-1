@@ -44,7 +44,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import ru.gaket.themoviedb.R
@@ -75,7 +74,6 @@ private fun MovieDetailsViewPreview() {
     )
 }
 
-@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 internal fun MovieDetailsView(
     viewModel: MovieDetailsViewModel,
